@@ -1,0 +1,6 @@
+{
+  "name": "CluckFeed - Formulasi Pakan & IoT Mixer",
+  "description": "Aplikasi presisi formulasi pakan ternak ayam mandiri berbasis Least-Cost Formulation (LCF), standar SNI, dan kontrol mesin dispenser/mixer IoT.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
