@@ -5,8 +5,13 @@ export function solveFeedFormulation(
   livestock: LivestockType,
   phase: string,
   batchKg: number,
-  customTargets?: Partial<TargetNutrisi>
+  customTargets?: Partial<TargetNutrisi>,
+  marketPriceInput?: number
 ): FormulaResultData {
+  // Benchmark market price of commercial finished feed
+  const benchmarkPrice = marketPriceInput && marketPriceInput > 0
+    ? marketPriceInput
+    : (livestock === 'broiler' ? 8500 : 7500);
   // Selected ingredients
   const activeIngs = ingredients.filter(i => i.selected);
 
@@ -130,6 +135,9 @@ export function solveFeedFormulation(
 
     const totalCost = ingDetails.reduce((sum, i) => sum + i.totalCost, 0);
     const costPerKg = Math.round(totalCost / batchKg);
+    const savingPerKg = Math.max(0, benchmarkPrice - costPerKg);
+    const savingPercent = benchmarkPrice > 0 ? Math.round((savingPerKg / benchmarkPrice) * 100) : 0;
+    const savingAmount = savingPerKg * batchKg;
 
     return {
       id: 'batch-' + Date.now(),
@@ -142,8 +150,9 @@ export function solveFeedFormulation(
       isFeasible: false,
       totalCost,
       costPerKg,
-      savingPercent: 8,
-      savingAmount: 320 * batchKg,
+      marketPrice: benchmarkPrice,
+      savingPercent,
+      savingAmount,
       ingredients: ingDetails,
       nutrients: {
         pk: { val: achievedPK, min: pkMin, max: pkMax, ok: achievedPK >= pkMin, percentProgress: 89 },
@@ -218,6 +227,9 @@ export function solveFeedFormulation(
 
   const totalCost = ingDetails.reduce((s, i) => s + i.totalCost, 0);
   const costPerKg = Math.round(totalCost / batchKg);
+  const savingPerKg = Math.max(0, benchmarkPrice - costPerKg);
+  const savingPercent = benchmarkPrice > 0 ? Math.round((savingPerKg / benchmarkPrice) * 100) : 0;
+  const savingAmount = savingPerKg * batchKg;
 
   return {
     id: 'batch-' + Date.now(),
@@ -230,8 +242,9 @@ export function solveFeedFormulation(
     isFeasible: true,
     totalCost,
     costPerKg,
-    savingPercent: 14,
-    savingAmount: Math.round(batchKg * 1150),
+    marketPrice: benchmarkPrice,
+    savingPercent,
+    savingAmount,
     ingredients: ingDetails,
     nutrients: {
       pk: { val: 20.2, min: pkMin, max: pkMax, ok: true, percentProgress: 82 },

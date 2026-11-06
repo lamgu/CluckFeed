@@ -23,43 +23,46 @@ export const WorkflowStep2Prices: React.FC<WorkflowStep2Props> = ({
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Stepper Sub-header (Shrink-0) */}
-      <div className="shrink-0 px-4 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-label-sm text-[11px] uppercase tracking-wider text-[#006e2f] font-bold">
-            Langkah 2 dari 3
-          </span>
-          <span className="font-label-sm text-[12px] text-[#3d4a3d] font-semibold">
-            Harga Bahan Baku
-          </span>
-        </div>
-        <div className="w-full flex items-center gap-1.5 h-1.5">
-          <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
-          <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
-          <div className="flex-1 h-full rounded-full bg-[#d9e3f6] transition-all"></div>
+      <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-label-sm text-[11px] uppercase tracking-wider text-[#006e2f] font-bold">
+              Langkah 2 dari 3
+            </span>
+            <span className="font-label-sm text-[12px] text-[#3d4a3d] font-semibold">
+              Harga Bahan Baku
+            </span>
+          </div>
+          <div className="w-full flex items-center gap-1.5 h-1.5">
+            <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
+            <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
+            <div className="flex-1 h-full rounded-full bg-[#d9e3f6] transition-all"></div>
+          </div>
         </div>
       </div>
 
       {/* Scrollable Middle Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-4 py-3 flex flex-col gap-3">
-        {/* Educational Info Callout Banner */}
-        <div className="bg-[#eff4ff] rounded-[18px] p-4 shadow-xs border border-[#e6eeff] flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#e6eeff] flex items-center justify-center flex-shrink-0 text-[#006e2f]">
-            <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-              calculate
-            </span>
+      <div className="flex-1 overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto w-full flex flex-col gap-4 pb-6">
+          {/* Educational Info Callout Banner */}
+          <div className="bg-[#eff4ff] rounded-[18px] p-4 shadow-xs border border-[#e6eeff] flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#e6eeff] flex items-center justify-center flex-shrink-0 text-[#006e2f]">
+              <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                calculate
+              </span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-title-md text-[14px] text-[#121c2a] font-bold">
+                Kalkulasi Otomatis (LCF)
+              </span>
+              <p className="font-body-sm text-[11px] text-[#3d4a3d] leading-relaxed">
+                Masukkan harga pasar terkini untuk mendapatkan formulasi nutrisi terstandar SNI dengan biaya termurah.
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-title-md text-[14px] text-[#121c2a] font-bold">
-              Kalkulasi Otomatis (LCF)
-            </span>
-            <p className="font-body-sm text-[11px] text-[#3d4a3d] leading-relaxed">
-              Masukkan harga pasar terkini untuk mendapatkan formulasi nutrisi terstandar SNI dengan biaya termurah.
-            </p>
-          </div>
-        </div>
 
-        {/* Ingredients Price & Constraint List */}
-        <div className="flex flex-col gap-3">
+          {/* Ingredients Price & Constraint Responsive Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {selectedIngredients.map((ing) => {
           return (
             <div
@@ -187,11 +190,12 @@ export const WorkflowStep2Prices: React.FC<WorkflowStep2Props> = ({
           );
         })}
         </div>
+        </div>
       </div>
 
       {/* Pinned Bottom Navigation Bar (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
-        <div className="w-full flex items-center gap-3">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-7xl mx-auto w-full flex items-center gap-3">
           {/* Back Button */}
           <button
             onClick={onBack}

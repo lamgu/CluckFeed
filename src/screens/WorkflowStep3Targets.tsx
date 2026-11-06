@@ -36,19 +36,171 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
   const [customEmMin, setCustomEmMin] = useState<number>(3050);
   const [customEmMax, setCustomEmMax] = useState<number>(3150);
 
-  // Auto-detected Phase calculation
+  // Auto-detected Phase calculation according to CSV template
   const effectiveAgeDays = ageUnit === 'minggu' ? ageValue * 7 : ageValue;
-  const detectedPhase = React.useMemo(() => {
+  const currentSpek = React.useMemo(() => {
     if (livestock === 'broiler') {
-      if (effectiveAgeDays <= 14) return 'Broiler Starter (0-14 Hari)';
-      if (effectiveAgeDays <= 28) return 'Broiler Grower (15-28 Hari)';
-      return 'Broiler Finisher (> 28 Hari)';
+      if (effectiveAgeDays <= 12) {
+        return {
+          phase: 'Broiler Starter (0–12 Hari)',
+          pk: '21.0%',
+          em: '2.900 kkal',
+          ca: '0.96 - 1.00%',
+          ap: '0.58%',
+          lysine: '1.26%',
+          met: '0.48%',
+          pati: '37.0%',
+          pkMin: 21.0,
+          pkMax: 22.5,
+          emMin: 2900,
+          emMax: 3000
+        };
+      }
+      if (effectiveAgeDays <= 28) {
+        return {
+          phase: 'Broiler Grower (13–28 Hari)',
+          pk: '19.0%',
+          em: '2.950 kkal',
+          ca: '0.80 - 1.00%',
+          ap: '0.50%',
+          lysine: '1.16%',
+          met: '0.47%',
+          pati: '36.0%',
+          pkMin: 19.0,
+          pkMax: 20.5,
+          emMin: 2950,
+          emMax: 3050
+        };
+      }
+      return {
+        phase: 'Broiler Finisher (29–Panen)',
+        pk: '18.0%',
+        em: '3.050 kkal',
+        ca: '0.74 - 1.00%',
+        ap: '0.37%',
+        lysine: '1.06%',
+        met: '0.44%',
+        pati: '36.0%',
+        pkMin: 18.0,
+        pkMax: 19.5,
+        emMin: 3050,
+        emMax: 3150
+      };
     } else {
-      if (effectiveAgeDays <= 56) return 'Layer Starter / Starter Pullet (0-8 Minggu)';
-      if (effectiveAgeDays <= 112) return 'Layer Pullet / Developer (9-16 Minggu)';
-      return 'Layer Produksi / Layer Peak (> 17 Minggu)';
+      if (effectiveAgeDays <= 35) {
+        return {
+          phase: 'Layer Starter (0–5 Minggu)',
+          pk: '20.5%',
+          em: '2.950 kkal',
+          ca: '0.80 - 1.10%',
+          ap: '0.44%',
+          lysine: '1.03%',
+          met: '0.56%',
+          pati: '37.0%',
+          pkMin: 20.5,
+          pkMax: 22.0,
+          emMin: 2950,
+          emMax: 3050
+        };
+      }
+      if (effectiveAgeDays <= 70) {
+        return {
+          phase: 'Layer Grower (6–10 Minggu)',
+          pk: '19.0%',
+          em: '2.850 kkal',
+          ca: '0.70 - 1.00%',
+          ap: '0.39%',
+          lysine: '0.87%',
+          met: '0.45%',
+          pati: '36.0%',
+          pkMin: 19.0,
+          pkMax: 20.5,
+          emMin: 2850,
+          emMax: 2950
+        };
+      }
+      if (effectiveAgeDays <= 105) {
+        return {
+          phase: 'Layer Developer (11–15 Minggu)',
+          pk: '16.4%',
+          em: '2.700 kkal',
+          ca: '0.70 - 1.00%',
+          ap: '0.38%',
+          lysine: '0.67%',
+          met: '0.36%',
+          pati: '36.0%',
+          pkMin: 16.4,
+          pkMax: 17.5,
+          emMin: 2700,
+          emMax: 2800
+        };
+      }
+      if (effectiveAgeDays <= 126) {
+        return {
+          phase: 'Pre-Layer (16–18 Minggu)',
+          pk: '16.8%',
+          em: '2.700 kkal',
+          ca: '2.20 - 2.50%',
+          ap: '0.38%',
+          lysine: '0.73%',
+          met: '0.39%',
+          pati: '36.0%',
+          pkMin: 16.8,
+          pkMax: 18.0,
+          emMin: 2700,
+          emMax: 2800
+        };
+      }
+      if (effectiveAgeDays <= 315) {
+        return {
+          phase: 'Layer-1 / Peak (18–45 Minggu)',
+          pk: '17.5%',
+          em: '2.700–2.800 kkal',
+          ca: '3.80%',
+          ap: '0.35%',
+          lysine: '0.78%',
+          met: '0.39%',
+          pati: '35.0%',
+          pkMin: 17.5,
+          pkMax: 18.5,
+          emMin: 2700,
+          emMax: 2800
+        };
+      }
+      if (effectiveAgeDays <= 560) {
+        return {
+          phase: 'Layer-2 (45–80 Minggu)',
+          pk: '17.0%',
+          em: '2.700–2.800 kkal',
+          ca: '3.90%',
+          ap: '0.34%',
+          lysine: '0.76%',
+          met: '0.38%',
+          pati: '35.0%',
+          pkMin: 17.0,
+          pkMax: 18.0,
+          emMin: 2700,
+          emMax: 2800
+        };
+      }
+      return {
+        phase: 'Layer-3 (> 80 Minggu)',
+        pk: '16.0%',
+        em: '2.700–2.800 kkal',
+        ca: '4.00%',
+        ap: '0.32%',
+        lysine: '0.74%',
+        met: '0.37%',
+        pati: '35.0%',
+        pkMin: 16.0,
+        pkMax: 17.5,
+        emMin: 2700,
+        emMax: 2800
+      };
     }
   }, [livestock, effectiveAgeDays]);
+
+  const detectedPhase = currentSpek.phase;
 
   const handleCalculate = () => {
     setIsCalculating(true);
@@ -62,7 +214,12 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           emMax: customEmMax
         });
       } else {
-        onCalculate();
+        onCalculate({
+          pkMin: currentSpek.pkMin,
+          pkMax: currentSpek.pkMax,
+          emMin: currentSpek.emMin,
+          emMax: currentSpek.emMax
+        });
       }
     }, 700);
   };
@@ -70,26 +227,31 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Step Progress Sub-header (Shrink-0) */}
-      <div className="shrink-0 px-4 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-label-sm text-[11px] text-[#006e2f] font-bold uppercase tracking-wider">
-            Langkah 3 dari 3
-          </span>
-          <span className="font-label-sm text-[12px] text-[#3d4a3d] font-semibold">
-            Target Kebutuhan
-          </span>
-        </div>
-        <div className="grid grid-cols-3 gap-1.5 w-full">
-          <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
-          <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
-          <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
+      <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-label-sm text-[11px] text-[#006e2f] font-bold uppercase tracking-wider">
+              Langkah 3 dari 3
+            </span>
+            <span className="font-label-sm text-[12px] text-[#3d4a3d] font-semibold">
+              Target Kebutuhan
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 w-full">
+            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
+            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
+            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
+          </div>
         </div>
       </div>
 
       {/* Scrollable Middle Content Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-4 py-3 flex flex-col gap-5">
-        {/* Section 1: Livestock Selection */}
-        <div className="flex flex-col gap-2">
+      <div className="flex-1 overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-6">
+          {/* Left Column: Livestock, Age, Batch Size */}
+          <div className="lg:col-span-6 flex flex-col gap-5">
+            {/* Section 1: Livestock Selection */}
+            <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <label className="font-headline-sm text-[15px] text-[#121c2a] font-bold">
               Jenis Ternak
@@ -320,7 +482,10 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
             ))}
           </div>
         </div>
+      </div>
 
+      {/* Right Column: Nutrient Targets (SNI or Custom) */}
+      <div className="lg:col-span-6 flex flex-col gap-5">
         {/* Section 4: Target Nutrisi (Standar vs Custom) */}
         <div className="flex flex-col gap-3">
           {/* Segmented Tab Header */}
@@ -360,16 +525,19 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
               <label className="font-label-sm text-[11px] text-[#6d7b6c] font-medium mb-1.5">
                 Acuan Rujukan Formulir:
               </label>
+              {/* Acuan Rujukan Selector Banner */}
               <div className="flex items-center justify-between p-3 bg-[#eff4ff] rounded-[12px] border border-[#e6eeff]">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="material-symbols-outlined text-[20px] text-[#006e2f]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     verified
                   </span>
                   <span className="font-label-md text-[12px] text-[#121c2a] font-semibold truncate">
-                    SNI 2015 {livestock === 'broiler' ? 'Broiler Grower / Cobb 500' : 'Layer Masa Produksi'}
+                    Template Spek CSV • {currentSpek.phase}
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-[20px] text-[#6d7b6c]">unfold_more</span>
+                <span className="text-[10px] bg-white px-2 py-0.5 rounded-full text-[#006e2f] font-bold border border-[#e6eeff]">
+                  Sesuai Umur
+                </span>
               </div>
 
               {/* Nutrient Detail Cards */}
@@ -381,7 +549,7 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                     </div>
                     <div className="flex flex-col">
                       <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
-                        Protein Kasar (PK)
+                        Protein Kasar (PK min)
                       </span>
                       <span className="font-body-sm text-[10px] text-[#6d7b6c]">
                         Pertumbuhan otot &amp; daging
@@ -390,9 +558,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                   </div>
                   <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
                     <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {livestock === 'broiler' ? '19.0 - 21.0' : '17.0 - 18.5'}
+                      {currentSpek.pk}
                     </span>
-                    <span className="font-label-sm text-[11px] text-[#6d7b6c]">%</span>
                   </div>
                 </div>
 
@@ -412,9 +579,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                   </div>
                   <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
                     <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {livestock === 'broiler' ? '3050 - 3150' : '2700 - 2850'}
+                      {currentSpek.em}
                     </span>
-                    <span className="font-label-sm text-[11px] text-[#6d7b6c]">kkal</span>
                   </div>
                 </div>
 
@@ -425,7 +591,7 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                     </div>
                     <div className="flex flex-col">
                       <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
-                        Kalsium (Ca)
+                        Kalsium (Ca min-max)
                       </span>
                       <span className="font-body-sm text-[10px] text-[#6d7b6c]">
                         Struktur rangka &amp; cangkang
@@ -434,9 +600,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                   </div>
                   <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
                     <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {livestock === 'broiler' ? '0.90 - 1.10' : '3.50 - 4.20'}
+                      {currentSpek.ca}
                     </span>
-                    <span className="font-label-sm text-[11px] text-[#6d7b6c]">%</span>
                   </div>
                 </div>
 
@@ -450,13 +615,35 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                         Fosfor Tersedia (aP)
                       </span>
                       <span className="font-body-sm text-[10px] text-[#6d7b6c]">
-                        Keseimbangan mineral
+                        Keseimbangan mineral tulang
                       </span>
                     </div>
                   </div>
                   <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">0.45 - 0.55</span>
-                    <span className="font-label-sm text-[11px] text-[#6d7b6c]">%</span>
+                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
+                      {currentSpek.ap}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 rounded-lg">
+                      <span className="material-symbols-outlined text-[20px]">biotech</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                        Lisin &amp; Metionin
+                      </span>
+                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                        Asam amino esensial tercerna
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
+                    <span className="font-label-lg text-[12px] font-bold text-[#121c2a]">
+                      Lys {currentSpek.lysine} • Met {currentSpek.met}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -600,11 +787,13 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
             </div>
           )}
         </div>
+        </div>
+        </div>
       </div>
 
       {/* Pinned Bottom Action Bar (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full p-4 bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
-        <div className="w-full flex flex-col gap-2">
+      <div className="shrink-0 w-full p-4 sm:px-6 lg:px-8 bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-7xl mx-auto w-full flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}

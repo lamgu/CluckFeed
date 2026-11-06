@@ -7,14 +7,28 @@ export interface Ingredient {
   category: 'energi' | 'protein' | 'mineral' | 'aditif';
   defaultPrice: number;
   currentPrice: number;
-  protein: number; // in %
-  energy: number;  // in kkal/kg (EM)
-  calcium: number; // in %
-  phosphorus: number; // in %
-  fiber?: number; // in %
-  lysine?: number; // in %
-  methionine?: number; // in %
-  fat?: number; // in %
+  protein: number;       // Protein Kasar (%)
+  energy: number;        // Energi Met (kkal/kg)
+  fat?: number;          // Lemak (%)
+  fiber?: number;        // Serat Kasar (%)
+  pati?: number;         // Pati (%)
+  moisture?: number;     // Kadar Air (%)
+  dryMatter?: number;    // Bahan Kering (%)
+  ash?: number;          // Abu (%)
+  calcium: number;       // Calcium (%)
+  phosphorus: number;    // Phos Total (%)
+  phosAvailable?: number;// Phos Available (%)
+  sodium?: number;       // Na (%)
+  chloride?: number;     // Cl (%)
+  lysine?: number;       // Lysine tercerna (%)
+  methionine?: number;   // Methionine tercerna (%)
+  metCys?: number;       // Met+Cys tercerna (%)
+  threonine?: number;    // Threonine tercerna (%)
+  tryptophan?: number;   // Tryptophane tercerna (%)
+  arginine?: number;     // Arginine tercerna (%)
+  isoleucine?: number;   // Isoleucine tercerna (%)
+  valine?: number;       // Valine tercerna (%)
+  choline?: number;      // Choline (mg/kg)
   minConstraint?: number; // %
   maxConstraint?: number; // %
   hasConstraint: boolean;
@@ -54,6 +68,7 @@ export interface FormulaResultData {
   isFeasible: boolean;
   totalCost: number;
   costPerKg: number;
+  marketPrice?: number;
   savingPercent: number;
   savingAmount: number;
   ingredients: {

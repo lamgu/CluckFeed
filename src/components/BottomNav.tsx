@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type TabKey = 'beranda' | 'riwayat' | 'asisten-ai' | 'profil';
+export type TabKey = 'beranda' | 'riwayat' | 'asisten-ai' | 'matrix' | 'profil';
 
 interface BottomNavProps {
   activeTab: TabKey;
@@ -12,11 +12,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
     { key: 'beranda', label: 'Beranda', icon: 'home' },
     { key: 'riwayat', label: 'Riwayat', icon: 'history' },
     { key: 'asisten-ai', label: 'Asisten AI', icon: 'smart_toy' },
+    { key: 'matrix', label: 'Matrix', icon: 'table_chart' },
     { key: 'profil', label: 'Profil', icon: 'account_circle' }
   ];
 
   return (
-    <nav className="shrink-0 w-full z-30 bg-[#ffffff]/95 backdrop-blur-xl border-t border-[#e6eeff] shadow-[0_-2px_12px_rgba(0,0,0,0.05)]">
+    <nav className="md:hidden shrink-0 w-full z-30 bg-[#ffffff]/95 backdrop-blur-xl border-t border-[#e6eeff] shadow-[0_-2px_12px_rgba(0,0,0,0.05)]">
       <div className="w-full mx-auto flex justify-around items-center h-16 px-2">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;

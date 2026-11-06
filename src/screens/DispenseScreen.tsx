@@ -87,15 +87,16 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Scrollable Middle Content Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div className="flex-1 overflow-y-auto phone-scrollbar py-3">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col gap-4 pb-6">
         {/* Top Context & Live Status Header */}
-        <section className="px-4 pt-3 pb-3 flex flex-col gap-2.5">
+        <section className="pt-1 pb-1 flex flex-col gap-2.5">
           <div className="flex items-start justify-between">
             <div>
               <span className="inline-block text-[11px] font-body-sm text-[#6d7b6c] font-semibold">
                 Batch #084-BG
               </span>
-              <h2 className="text-[20px] font-headline-md font-bold text-[#121c2a]">
+              <h2 className="text-[20px] sm:text-[24px] font-headline-md font-bold text-[#121c2a]">
                 {batchName}
               </h2>
             </div>
@@ -125,7 +126,7 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
 
         {/* Emergency Alert Banner if stopped */}
         {isEmergencyStopped && (
-          <div className="mx-4 mb-3 p-3 bg-red-100 border border-red-300 rounded-[18px] flex items-center justify-between gap-2 text-red-900">
+          <div className="p-3 bg-red-100 border border-red-300 rounded-[18px] flex items-center justify-between gap-2 text-red-900">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-red-600 text-[22px]">warning</span>
               <span className="text-[12px] font-bold">Mesin dihentikan secara darurat. Motor dispenser mati.</span>
@@ -140,67 +141,68 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
         )}
 
         {/* Overall Progress Card */}
-      <section className="px-4 mb-3">
-        <div className="bg-white rounded-[24px] p-4 shadow-xs border border-[#e5e7eb] flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-[14px] bg-[#7cf994]/30 flex items-center justify-center text-[#006e2f]">
-                <span className="material-symbols-outlined text-[22px]">scale</span>
-              </div>
-              <div>
-                <span className="text-[11px] font-label-sm text-[#6d7b6c] uppercase tracking-wider font-semibold">
-                  Progres Keseluruhan
-                </span>
-                <div className="text-[17px] font-headline-sm font-bold text-[#121c2a]">
-                  {totalCurrentKg.toFixed(1)} <span className="text-[12px] text-[#6d7b6c] font-normal">/ {totalTargetKg.toFixed(1)} kg</span>
+        <section>
+          <div className="bg-white rounded-[24px] p-4 sm:p-5 shadow-xs border border-[#e5e7eb] flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-[14px] bg-[#7cf994]/30 flex items-center justify-center text-[#006e2f]">
+                  <span className="material-symbols-outlined text-[22px]">scale</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-label-sm text-[#6d7b6c] uppercase tracking-wider font-semibold">
+                    Progres Keseluruhan
+                  </span>
+                  <div className="text-[17px] font-headline-sm font-bold text-[#121c2a]">
+                    {totalCurrentKg.toFixed(1)} <span className="text-[12px] text-[#6d7b6c] font-normal">/ {totalTargetKg.toFixed(1)} kg</span>
+                  </div>
                 </div>
               </div>
+
+              <div className="text-right">
+                <span className="text-[24px] sm:text-[28px] font-metric-display text-[#006e2f] font-extrabold">
+                  {overallPercentage}%
+                </span>
+              </div>
             </div>
 
-            <div className="text-right">
-              <span className="text-[24px] font-metric-display text-[#006e2f] font-extrabold">
-                {overallPercentage}%
-              </span>
+            {/* Linear High-Glance Progress Bar */}
+            <div className="w-full bg-[#eff4ff] h-3.5 rounded-full overflow-hidden p-0.5 border border-[#e6eeff]">
+              <div
+                className="bg-[#22c55e] h-full rounded-full transition-all duration-500 ease-out flex items-center justify-end pr-1"
+                style={{ width: `${overallPercentage}%` }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs"></span>
+              </div>
+            </div>
+
+            {/* Time estimate & Sub metrics */}
+            <div className="flex items-center justify-between pt-1 text-[11px] text-[#6d7b6c]">
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-[#855300]">hourglass_top</span>
+                <span className="font-medium text-[#121c2a]">
+                  {overallPercentage >= 100 ? 'Selesai ditimbang!' : 'Estimasi selesai: ± 3-4 Menit'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1 text-[#006e2f] font-bold">
+                <span className="material-symbols-outlined text-[15px]">speed</span>
+                <span>1.8 kg/dtk</span>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Linear High-Glance Progress Bar */}
-          <div className="w-full bg-[#eff4ff] h-3.5 rounded-full overflow-hidden p-0.5 border border-[#e6eeff]">
-            <div
-              className="bg-[#22c55e] h-full rounded-full transition-all duration-500 ease-out flex items-center justify-end pr-1"
-              style={{ width: `${overallPercentage}%` }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs"></span>
-            </div>
+        {/* Hopper Feeder List (4 columns on desktop, 2 on tablet, 1 on mobile) */}
+        <section className="flex flex-col gap-2.5">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-[14px] font-headline-sm text-[#121c2a] font-bold">
+              Status Wadah Bahan (Hopper)
+            </h3>
+            <span className="text-[11px] text-[#6d7b6c] font-medium">4 Wadah Aktif</span>
           </div>
 
-          {/* Time estimate & Sub metrics */}
-          <div className="flex items-center justify-between pt-1 text-[11px] text-[#6d7b6c]">
-            <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px] text-[#855300]">hourglass_top</span>
-              <span className="font-medium text-[#121c2a]">
-                {overallPercentage >= 100 ? 'Selesai ditimbang!' : 'Estimasi selesai: ± 3-4 Menit'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 text-[#006e2f] font-bold">
-              <span className="material-symbols-outlined text-[15px]">speed</span>
-              <span>1.8 kg/dtk</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Hopper Feeder List */}
-      <section className="px-4 flex flex-col gap-2.5">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="text-[14px] font-headline-sm text-[#121c2a] font-bold">
-            Status Wadah Bahan (Hopper)
-          </h3>
-          <span className="text-[11px] text-[#6d7b6c] font-medium">4 Wadah Aktif</span>
-        </div>
-
-        {hoppers.map((hopper) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {hoppers.map((hopper) => {
           const hopperPct = Math.min(100, Math.round((hopper.currentKg / hopper.targetKg) * 100));
           const isDone = hopper.status === 'selesai' || hopperPct >= 100;
           const isActive = hopper.status === 'menimbang' && !isDone;
@@ -294,10 +296,11 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
             </div>
           );
         })}
+          </div>
       </section>
 
       {/* Mixer Status Mini-bar Banner */}
-      <section className="px-4 mt-4 mb-2">
+      <section className="mt-2 mb-2">
         <div className="bg-[#eff4ff] rounded-[20px] p-4 flex items-center gap-3 text-[#121c2a] shadow-xs border border-[#e6eeff]">
           <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0 ${
             mixerStatus === 'Mengaduk' ? 'bg-[#22c55e] text-white animate-spin' : 'bg-[#e6eeff] text-[#006e2f]'
@@ -324,10 +327,11 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
         </div>
       </section>
       </div>
+      </div>
 
       {/* Pinned Bottom Control Panel (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-[#e6eeff] z-30">
-        <div className="w-full flex items-center gap-3">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-7xl mx-auto w-full flex items-center gap-3">
           {/* Emergency Stop Button */}
           <button
             type="button"

@@ -29,7 +29,7 @@ export const StokGudangModal: React.FC<StokGudangModalProps> = ({
 
   return (
     <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
-      <div className="bg-white rounded-t-[28px] sm:rounded-[24px] w-full max-w-md p-5 flex flex-col gap-4 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div className="bg-white rounded-t-[28px] sm:rounded-[24px] w-full max-w-md sm:max-w-xl p-5 flex flex-col gap-4 shadow-2xl max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[#006e2f] text-[24px]">inventory_2</span>

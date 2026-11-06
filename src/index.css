@@ -64,7 +64,7 @@
   scrollbar-width: none;
 }
 
-/* Sleek smartphone-style scrollbar indicator */
+/* Responsive modern web scrollbar indicator */
 .phone-scrollbar {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
@@ -72,7 +72,8 @@
   scrollbar-color: rgba(0, 110, 47, 0.25) transparent;
 }
 .phone-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
   display: block;
 }
 .phone-scrollbar::-webkit-scrollbar-track {

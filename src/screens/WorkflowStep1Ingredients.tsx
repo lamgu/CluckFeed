@@ -43,115 +43,118 @@ export const WorkflowStep1Ingredients: React.FC<WorkflowStep1Props> = ({
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Workflow Context Sub-bar (Shrink-0) */}
-      <div className="shrink-0 px-4 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <span className="font-label-sm text-[11px] font-bold tracking-wider text-[#006e2f] uppercase">
-              Langkah 1 dari 3
-            </span>
-            <span className="w-1 h-1 rounded-full bg-[#bccbb9]"></span>
-            <span className="font-label-md text-[13px] font-semibold text-[#121c2a]">
-              Pilih Bahan Pakan
-            </span>
+      <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <span className="font-label-sm text-[11px] font-bold tracking-wider text-[#006e2f] uppercase">
+                Langkah 1 dari 3
+              </span>
+              <span className="w-1 h-1 rounded-full bg-[#bccbb9]"></span>
+              <span className="font-label-md text-[13px] font-semibold text-[#121c2a]">
+                Pilih Bahan Pakan
+              </span>
+            </div>
+
+            <div className="px-3 py-1 rounded-full bg-[#7cf994]/40 text-[#007230] font-label-md text-[12px] font-bold flex items-center gap-1 shadow-xs">
+              <span className="material-symbols-outlined text-[15px]">check_circle</span>
+              <span>{selectedCount} Dipilih</span>
+            </div>
           </div>
 
-          <div className="px-3 py-1 rounded-full bg-[#7cf994]/40 text-[#007230] font-label-md text-[12px] font-bold flex items-center gap-1 shadow-xs">
-            <span className="material-symbols-outlined text-[15px]">check_circle</span>
-            <span>{selectedCount} Dipilih</span>
+          {/* Step Progress Line */}
+          <div className="grid grid-cols-3 gap-1.5 w-full">
+            <div className="h-1.5 rounded-full bg-[#22c55e] transition-all"></div>
+            <div className="h-1.5 rounded-full bg-[#d9e3f6] transition-all"></div>
+            <div className="h-1.5 rounded-full bg-[#d9e3f6] transition-all"></div>
           </div>
-        </div>
-
-        {/* Step Progress Line */}
-        <div className="grid grid-cols-3 gap-1.5 w-full">
-          <div className="h-1.5 rounded-full bg-[#22c55e] transition-all"></div>
-          <div className="h-1.5 rounded-full bg-[#d9e3f6] transition-all"></div>
-          <div className="h-1.5 rounded-full bg-[#d9e3f6] transition-all"></div>
         </div>
       </div>
 
       {/* Scrollable Middle Body: Search, Filters & Ingredient Cards */}
-      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
-        {/* Search & Filter Cluster */}
-        <div className="px-4 pt-3 pb-2 flex flex-col gap-3">
-        {/* Search Bar */}
-        <div className="relative w-full">
-          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6d7b6c] text-[20px]">
-            search
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari bahan pakan (misal: Jagung, Bekatul)..."
-            className="w-full h-12 pl-11 pr-10 rounded-full bg-white border border-[#e5e7eb] shadow-xs text-[#121c2a] placeholder:text-[#6d7b6c] font-body-md text-[13px] focus:outline-none focus:border-[#22c55e] focus:bg-[#eff4ff]/30 transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#e6eeff] text-[#3d4a3d] flex items-center justify-center hover:bg-[#d0dbed]"
-            >
-              <span className="material-symbols-outlined text-[16px]">close</span>
-            </button>
-          )}
-        </div>
-
-        {/* Category Filter Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar -mx-4 px-4">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.key;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
-                className={`flex-shrink-0 px-3.5 py-1.5 rounded-full font-label-md text-[12px] shadow-xs transition-all flex items-center gap-1.5 ${
-                  isActive
-                    ? 'bg-[#22c55e] text-white font-bold'
-                    : 'bg-white text-[#3d4a3d] border border-[#e5e7eb] hover:bg-[#eff4ff]'
-                }`}
-              >
-                <span>{cat.label}</span>
-                <span
-                  className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-[#e6eeff] text-[#3d4a3d]'
-                  }`}
+      <div className="flex-1 overflow-y-auto phone-scrollbar flex flex-col">
+        <div className="max-w-7xl mx-auto w-full flex flex-col flex-1 pb-6">
+          {/* Search & Filter Cluster */}
+          <div className="px-4 sm:px-6 lg:px-8 pt-3 pb-2 flex flex-col gap-3">
+            {/* Search Bar */}
+            <div className="relative w-full">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6d7b6c] text-[20px]">
+                search
+              </span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari bahan pakan (misal: Jagung, Bekatul)..."
+                className="w-full h-12 pl-11 pr-10 rounded-full bg-white border border-[#e5e7eb] shadow-xs text-[#121c2a] placeholder:text-[#6d7b6c] font-body-md text-[13px] focus:outline-none focus:border-[#22c55e] focus:bg-[#eff4ff]/30 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#e6eeff] text-[#3d4a3d] flex items-center justify-center hover:bg-[#d0dbed]"
                 >
-                  {cat.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Smart Quick Helper Banner */}
-      <div className="px-4 my-1">
-        <div className="w-full bg-gradient-to-r from-[#eff4ff] to-[#7cf994]/20 p-3.5 flex items-center justify-between gap-2.5 rounded-2xl border border-[#7cf994]/30 shadow-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-[#22c55e]/20 flex items-center justify-center flex-shrink-0 text-[#006e2f]">
-              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                eco
-              </span>
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              )}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-label-md text-[13px] text-[#121c2a] font-bold truncate">
-                Rekomendasi Starter Broiler
-              </span>
-              <span className="font-body-sm text-[11px] text-[#3d4a3d] truncate">
-                5 bahan standar SNI sudah ditandai
-              </span>
+
+            {/* Category Filter Chips */}
+            <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+              {categories.map((cat) => {
+                const isActive = activeCategory === cat.key;
+                return (
+                  <button
+                    key={cat.key}
+                    onClick={() => setActiveCategory(cat.key)}
+                    className={`flex-shrink-0 px-3.5 py-1.5 rounded-full font-label-md text-[12px] shadow-xs transition-all flex items-center gap-1.5 ${
+                      isActive
+                        ? 'bg-[#22c55e] text-white font-bold'
+                        : 'bg-white text-[#3d4a3d] border border-[#e5e7eb] hover:bg-[#eff4ff]'
+                    }`}
+                  >
+                    <span>{cat.label}</span>
+                    <span
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                        isActive ? 'bg-white/20 text-white' : 'bg-[#e6eeff] text-[#3d4a3d]'
+                      }`}
+                    >
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
-          <button
-            onClick={onResetDefaults}
-            className="text-[#006e2f] font-label-md text-[12px] font-bold whitespace-nowrap active:opacity-75 hover:underline px-2 py-1"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
 
-      {/* Ingredients List */}
-      <div className="px-4 flex flex-col gap-2.5 pt-2">
+          {/* Smart Quick Helper Banner */}
+          <div className="px-4 sm:px-6 lg:px-8 my-1">
+            <div className="w-full bg-gradient-to-r from-[#eff4ff] to-[#7cf994]/20 p-3.5 flex items-center justify-between gap-2.5 rounded-2xl border border-[#7cf994]/30 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-[#22c55e]/20 flex items-center justify-center flex-shrink-0 text-[#006e2f]">
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    eco
+                  </span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-label-md text-[13px] text-[#121c2a] font-bold truncate">
+                    Rekomendasi Starter Broiler
+                  </span>
+                  <span className="font-body-sm text-[11px] text-[#3d4a3d] truncate">
+                    5 bahan standar SNI sudah ditandai
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={onResetDefaults}
+                className="text-[#006e2f] font-label-md text-[12px] font-bold whitespace-nowrap active:opacity-75 hover:underline px-2 py-1"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+
+          {/* Ingredients Responsive Grid */}
+          <div className="px-4 sm:px-6 lg:px-8 py-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {filteredIngredients.map((ing) => {
           const isSelected = ing.selected;
           return (
@@ -238,11 +241,12 @@ export const WorkflowStep1Ingredients: React.FC<WorkflowStep1Props> = ({
         </div>
       )}
 
+        </div>
       </div>
 
       {/* Pinned Bottom Action Dock (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full px-4 py-3 bg-white/95 backdrop-blur-md border-t border-[#e6eeff] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
-        <div className="w-full flex items-center justify-between gap-3">
+      <div className="shrink-0 w-full px-4 sm:px-6 lg:px-8 py-3 bg-white/95 backdrop-blur-md border-t border-[#e6eeff] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
+        <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
           {/* Left info */}
           <div className="flex flex-col min-w-0 pl-1">
             <div className="flex items-center gap-1.5">

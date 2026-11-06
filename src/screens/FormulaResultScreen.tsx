@@ -7,6 +7,7 @@ interface FormulaResultProps {
   onSendToDispense: () => void;
   onAskAI: () => void;
   onForceSave?: () => void;
+  onOpenMarketPriceModal?: () => void;
 }
 
 export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
@@ -14,7 +15,8 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
   onModify,
   onSendToDispense,
   onAskAI,
-  onForceSave
+  onForceSave,
+  onOpenMarketPriceModal
 }) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -30,43 +32,48 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Top Action & Meta Row (Shrink-0) */}
-      <div className="shrink-0 px-4 pt-3 pb-2 flex items-center justify-between border-b border-[#e6eeff]/60 bg-white/60 backdrop-blur-xs">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#7cf994]/40 text-[#007230]">
-            <span className="material-symbols-outlined text-[16px]">verified</span>
-          </span>
-          <span className="font-label-md text-[12px] text-[#6d7b6c] font-medium">
-            Batch ID: {data.batchNumber}
-          </span>
-        </div>
+      <div className="shrink-0 px-4 sm:px-6 lg:px-8 pt-3 pb-2 flex items-center justify-between border-b border-[#e6eeff]/60 bg-white/60 backdrop-blur-xs">
+        <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#7cf994]/40 text-[#007230]">
+              <span className="material-symbols-outlined text-[16px]">verified</span>
+            </span>
+            <span className="font-label-md text-[12px] text-[#6d7b6c] font-medium">
+              Batch ID: {data.batchNumber}
+            </span>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => showToast('Formula berhasil dibagikan')}
-            aria-label="Bagikan Formula"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[#eff4ff] text-[#121c2a] hover:bg-[#e6eeff] transition-transform active:scale-95"
-          >
-            <span className="material-symbols-outlined text-[19px]">share</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => showToast('Mengunduh dokumen PDF formula ransum...')}
-            aria-label="Unduh PDF"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[#eff4ff] text-[#121c2a] hover:bg-[#e6eeff] transition-transform active:scale-95"
-          >
-            <span className="material-symbols-outlined text-[19px]">download</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => showToast('Formula berhasil dibagikan')}
+              aria-label="Bagikan Formula"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#eff4ff] text-[#121c2a] hover:bg-[#e6eeff] transition-transform active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[19px]">share</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => showToast('Mengunduh dokumen PDF formula ransum...')}
+              aria-label="Unduh PDF"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#eff4ff] text-[#121c2a] hover:bg-[#e6eeff] transition-transform active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[19px]">download</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Scrollable Middle Content Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-4 py-3 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 py-4 flex flex-col">
+        <div className="max-w-7xl mx-auto w-full pb-6">
         {data.isFeasible ? (
           /* ================= LAYAK (FEASIBLE) VIEW ================= */
-          <>
-            {/* Summary Green Highlight Card */}
-            <section className="relative overflow-hidden rounded-[24px] bg-[#7cf994]/30 border border-[#7cf994]/60 p-4 shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            {/* Left Column: Summary & Donut & Tip */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              {/* Summary Green Highlight Card */}
+              <section className="relative overflow-hidden rounded-[24px] bg-[#7cf994]/30 border border-[#7cf994]/60 p-4 sm:p-5 shadow-xs">
               <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#006e2f]/10 blur-2xl pointer-events-none"></div>
               
               <div className="flex items-start justify-between gap-2 relative z-10">
@@ -101,18 +108,31 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
               </div>
 
               {/* Savings Pill */}
-              <div className="mt-3 relative z-10 flex items-center gap-2.5 p-2.5 bg-white/95 rounded-[16px] border border-emerald-100 shadow-xs">
-                <div className="w-8 h-8 rounded-full bg-[#6bff8f] flex items-center justify-center shrink-0 text-[#002109]">
-                  <span className="material-symbols-outlined text-[18px]">trending_down</span>
+              <div className="mt-3 relative z-10 flex items-center justify-between gap-2.5 p-2.5 bg-white/95 rounded-[16px] border border-emerald-100 shadow-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-full bg-[#6bff8f] flex items-center justify-center shrink-0 text-[#002109]">
+                    <span className="material-symbols-outlined text-[18px]">trending_down</span>
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-label-md text-[12px] text-[#006e2f] font-bold truncate">
+                      {data.savingPercent}% Lebih Murah dari Pakan Pasar {data.marketPrice ? `(Rp ${data.marketPrice.toLocaleString('id-ID')}/kg)` : ''}
+                    </span>
+                    <span className="font-body-sm text-[11px] text-[#6d7b6c] truncate">
+                      Hemat Rp {data.savingAmount.toLocaleString('id-ID')} per {data.totalBatchKg} kg adonan
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-label-md text-[12px] text-[#006e2f] font-bold truncate">
-                    {data.savingPercent}% Lebih Murah dari Pakan Komersil
-                  </span>
-                  <span className="font-body-sm text-[11px] text-[#6d7b6c] truncate">
-                    Hemat Rp {data.savingAmount.toLocaleString('id-ID')} per {data.totalBatchKg} kg adonan
-                  </span>
-                </div>
+                {onOpenMarketPriceModal && (
+                  <button
+                    onClick={onOpenMarketPriceModal}
+                    type="button"
+                    className="shrink-0 text-[10px] px-2.5 py-1 rounded-full bg-[#eff4ff] hover:bg-[#e6eeff] text-[#006e2f] font-bold border border-[#e6eeff] flex items-center gap-1 active:scale-95 transition-all"
+                    title="Ubah acuan harga pasar pakan jadi"
+                  >
+                    <span className="material-symbols-outlined text-[12px]">edit</span>
+                    <span>Harga Pasar</span>
+                  </button>
+                )}
               </div>
             </section>
 
@@ -180,7 +200,10 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                 </div>
               </div>
             </section>
+            </div>
 
+            {/* Right Column: Ingredients Detail & Nutrition Analysis */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
             {/* Ingredients Detail List */}
             <section className="flex flex-col gap-2">
               <div className="flex items-center justify-between px-1">
@@ -371,12 +394,15 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                 Formula ini siap langsung diteruskan ke mesin dispenser pakan otomatis kandang atau disimpan sebagai resep tetap.
               </p>
             </div>
-          </>
+          </div>
+        </div>
         ) : (
           /* ================= BELUM LAYAK (UNFEASIBLE) VIEW ================= */
-          <>
-            {/* Warning Banner / Summary Warning Card */}
-            <div className="bg-[#ffddb8]/40 border border-[#ffddb8] rounded-[24px] p-4 shadow-xs relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            {/* Left Column: Warning & Deficit */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              {/* Warning Banner / Summary Warning Card */}
+              <div className="bg-[#ffddb8]/40 border border-[#ffddb8] rounded-[24px] p-4 shadow-xs relative overflow-hidden">
               <div className="absolute -right-8 -top-8 w-28 h-28 bg-[#ef9900]/20 rounded-full blur-2xl pointer-events-none"></div>
 
               <div className="flex items-start justify-between gap-2 relative z-10">
@@ -492,9 +518,12 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                 <span className="material-symbols-outlined text-[18px]">expand_more</span>
               </div>
             </div>
+            </div>
 
-            {/* Diagnostic Insight Box */}
-            <div className="bg-[#eff4ff] rounded-[20px] p-4 shadow-xs border border-[#e6eeff] flex items-start gap-3">
+            {/* Right Column: Diagnostic & Current Composition & Expert Advice */}
+            <div className="lg:col-span-6 flex flex-col gap-4">
+              {/* Diagnostic Insight Box */}
+              <div className="bg-[#eff4ff] rounded-[20px] p-4 shadow-xs border border-[#e6eeff] flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-[#dee9fc] flex-shrink-0 flex items-center justify-center text-[#006e2f] mt-0.5">
                 <span className="material-symbols-outlined text-[20px]">lightbulb</span>
               </div>
@@ -580,13 +609,15 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                 </p>
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
+      )}
       </div>
+    </div>
 
       {/* Pinned Bottom Action Bar (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
-        <div className="w-full">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-7xl mx-auto w-full">
           {data.isFeasible ? (
             <div className="flex items-center gap-3">
               <button
