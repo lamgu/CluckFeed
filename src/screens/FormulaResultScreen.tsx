@@ -267,7 +267,7 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                       Analisis Nutrisi Terpenuhi
                     </h3>
                     <p className="font-body-sm text-[11px] text-[#006e2f] font-semibold">
-                      4 Parameter Sesuai SNI Broiler
+                      {data.solverStatus === 'optimal' ? 'Solusi Simplex LP Optimal' : '4 Parameter Standar SNI'}
                     </p>
                   </div>
                 </div>
@@ -384,6 +384,95 @@ export const FormulaResultScreen: React.FC<FormulaResultProps> = ({
                 </div>
               )}
             </section>
+
+            {/* Complete 22 Nutrient Matrix Table (SUMPRODUCT results) */}
+            {data.nutrientResults && data.nutrientResults.length > 0 && (
+              <section className="bg-white p-4 shadow-xs border border-[#e5e7eb] rounded-[24px]">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-[#006e2f]/10 text-[#006e2f] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[18px]">biotech</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-[14px] text-[#121c2a] font-bold">
+                        Matriks 22 Nutrisi Lab (SUMPRODUCT)
+                      </h3>
+                      <p className="text-[11px] text-[#6d7b6c]">
+                        Kandungan aktual dihitung dari persentase formula
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#7cf994]/30 text-[#007230] font-bold">
+                    Total: {data.totalFormulaPct ?? 100}%
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto max-h-[360px] overflow-y-auto border border-[#e6eeff] rounded-xl phone-scrollbar mt-3">
+                  <table className="w-full text-left text-[12px]">
+                    <thead className="bg-[#eff4ff] text-[#121c2a] sticky top-0 font-semibold z-10 border-b border-[#e6eeff]">
+                      <tr>
+                        <th className="py-2 px-3">Parameter Nutrisi</th>
+                        <th className="py-2 px-2 text-center">Min</th>
+                        <th className="py-2 px-2 text-right">Hasil Hitung</th>
+                        <th className="py-2 px-2 text-center">Max</th>
+                        <th className="py-2 px-2 text-center">Satuan</th>
+                        <th className="py-2 px-2 text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#e6eeff]">
+                      {data.nutrientResults.map((nr) => {
+                        const isOk = nr.status === 'ok';
+                        const isUnder = nr.status === 'below_min';
+                        const isOver = nr.status === 'above_max';
+                        return (
+                          <tr key={nr.id} className="hover:bg-[#f8f9ff] transition-colors">
+                            <td className="py-1.5 px-3 font-medium text-[#121c2a] whitespace-nowrap">
+                              {nr.name}
+                            </td>
+                            <td className="py-1.5 px-2 text-center text-slate-500 font-mono">
+                              {nr.min !== null ? nr.min : '—'}
+                            </td>
+                            <td className="py-1.5 px-2 text-right font-bold font-mono text-[#006e2f]">
+                              {nr.calculated >= 100
+                                ? nr.calculated.toLocaleString('id-ID', { maximumFractionDigits: 1 })
+                                : nr.calculated.toFixed(3)}
+                            </td>
+                            <td className="py-1.5 px-2 text-center text-slate-500 font-mono">
+                              {nr.max !== null ? nr.max : '—'}
+                            </td>
+                            <td className="py-1.5 px-2 text-center text-slate-500 text-[11px]">
+                              {nr.unit}
+                            </td>
+                            <td className="py-1.5 px-2 text-center whitespace-nowrap">
+                              {isOk && (
+                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#7cf994]/40 text-[#007230]">
+                                  ✓ Sesuai
+                                </span>
+                              )}
+                              {isUnder && (
+                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
+                                  ↓ Kurang
+                                </span>
+                              )}
+                              {isOver && (
+                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                                  ↑ Lebih
+                                </span>
+                              )}
+                              {nr.status === 'unconstrained' && (
+                                <span className="text-[10px] text-slate-400 font-medium">
+                                  Bebas
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
 
             {/* Delight Visual Tip Card */}
             <div className="bg-[#eff4ff] p-4 flex items-center gap-3 rounded-[20px] border border-[#e6eeff]">

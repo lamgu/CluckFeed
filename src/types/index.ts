@@ -44,18 +44,49 @@ export interface Ingredient {
 export type LivestockType = 'broiler' | 'layer';
 export type AgeUnit = 'hari' | 'minggu';
 
-export interface TargetNutrisi {
-  pkMin: number;
-  pkMax: number;
-  emMin: number;
-  emMax: number;
-  caMin: number;
-  caMax: number;
-  pMin: number;
-  pMax: number;
-  lysMetMin: number;
-  lysMetMax: number;
+export interface NutrientConstraint {
+  min: number | null;
+  max: number | null;
+  enabled: boolean;
 }
+
+export interface TargetNutrisi {
+  pkMin?: number;
+  pkMax?: number;
+  emMin?: number;
+  emMax?: number;
+  caMin?: number;
+  caMax?: number;
+  pMin?: number;
+  pMax?: number;
+  lysMetMin?: number;
+  lysMetMax?: number;
+  nutrients?: Record<string, NutrientConstraint>;
+}
+
+export interface LPNutrientResult {
+  id: string;
+  name: string;
+  unit: string;
+  min: number | null;
+  max: number | null;
+  calculated: number;
+  status: 'ok' | 'below_min' | 'above_max' | 'unconstrained';
+  enabled: boolean;
+}
+
+export interface LPIngredientResult {
+  id: string;
+  name: string;
+  percentage: number;      // 0-100
+  kg: number;
+  costPerKg: number;
+  totalCost: number;
+  color: string;
+  icon: string;
+}
+
+export type LPSolverStatus = 'optimal' | 'infeasible' | 'error';
 
 export interface FormulaResultData {
   id: string;
@@ -68,6 +99,7 @@ export interface FormulaResultData {
   isFeasible: boolean;
   totalCost: number;
   costPerKg: number;
+  costPerTon?: number;
   marketPrice?: number;
   savingPercent: number;
   savingAmount: number;
@@ -97,6 +129,10 @@ export interface FormulaResultData {
   }[];
   causeText?: string;
   expertAdvice?: string;
+  solverStatus?: LPSolverStatus;
+  solverMessage?: string;
+  nutrientResults?: LPNutrientResult[];
+  totalFormulaPct?: number;
 }
 
 export interface PresetItem {

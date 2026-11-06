@@ -1,4 +1,29 @@
 import { Ingredient, LivestockType, TargetNutrisi, FormulaResultData } from '../types';
+import {
+  runLPSolver,
+  buildConstraintsFromPreset,
+  PHASE_PRESETS,
+  validateLPInput,
+  NutrientConstraintSpec
+} from './lpSolver';
+
+/** Map livestock + age/phase text to preset key */
+export function getPresetKey(livestock: LivestockType, phase: string): string {
+  const p = phase.toLowerCase();
+  if (livestock === 'broiler') {
+    if (p.includes('starter') || p.includes('0-12') || p.includes('0–12')) return 'broiler-starter';
+    if (p.includes('finisher') || p.includes('29')) return 'broiler-finisher';
+    return 'broiler-grower';
+  } else {
+    if (p.includes('starter') || p.includes('0-5') || p.includes('0–5')) return 'layer-starter';
+    if (p.includes('grower') || p.includes('6-10') || p.includes('6–10')) return 'layer-grower';
+    if (p.includes('developer') || p.includes('11-15') || p.includes('11–15')) return 'layer-developer';
+    if (p.includes('pre-layer') || p.includes('prelayer') || p.includes('16-18') || p.includes('16–18')) return 'layer-prelayer';
+    if (p.includes('layer-2') || p.includes('layer 2') || p.includes('45-80') || p.includes('45–80')) return 'layer-2';
+    if (p.includes('layer-3') || p.includes('layer 3') || p.includes('> 80') || p.includes('>80')) return 'layer-3';
+    return 'layer-1';
+  }
+}
 
 export function solveFeedFormulation(
   ingredients: Ingredient[],
@@ -6,251 +31,228 @@ export function solveFeedFormulation(
   phase: string,
   batchKg: number,
   customTargets?: Partial<TargetNutrisi>,
-  marketPriceInput?: number
+  marketPriceInput?: number,
+  customNutrientConstraints?: NutrientConstraintSpec[]
 ): FormulaResultData {
   // Benchmark market price of commercial finished feed
   const benchmarkPrice = marketPriceInput && marketPriceInput > 0
     ? marketPriceInput
     : (livestock === 'broiler' ? 8500 : 7500);
+
   // Selected ingredients
   const activeIngs = ingredients.filter(i => i.selected);
 
-  // Targets based on SNI & Phase
-  let pkMin = 19.0;
-  let pkMax = 21.0;
-  let emMin = 3050;
-  let emMax = 3150;
-  let caMin = 0.90;
-  let caMax = 1.10;
-  let pMin = 0.45;
-  let pMax = 0.55;
+  // Build nutrient constraints
+  let nutrientConstraints: NutrientConstraintSpec[];
 
-  if (livestock === 'layer') {
-    pkMin = 17.0;
-    pkMax = 18.5;
-    emMin = 2700;
-    emMax = 2850;
-    caMin = 3.50;
-    caMax = 4.20;
-    pMin = 0.40;
-    pMax = 0.50;
-  } else if (phase.toLowerCase().includes('starter')) {
-    pkMin = 21.0;
-    pkMax = 23.0;
-    emMin = 2950;
-    emMax = 3100;
-  } else if (phase.toLowerCase().includes('finisher')) {
-    pkMin = 18.0;
-    pkMax = 20.0;
-    emMin = 3100;
-    emMax = 3250;
-  }
+  if (customNutrientConstraints && customNutrientConstraints.length > 0) {
+    nutrientConstraints = customNutrientConstraints;
+  } else {
+    const presetKey = getPresetKey(livestock, phase);
+    const preset = PHASE_PRESETS[presetKey] ?? PHASE_PRESETS['broiler-grower'];
+    nutrientConstraints = buildConstraintsFromPreset(preset);
 
-  if (customTargets) {
-    if (customTargets.pkMin !== undefined) pkMin = customTargets.pkMin;
-    if (customTargets.pkMax !== undefined) pkMax = customTargets.pkMax;
-    if (customTargets.emMin !== undefined) emMin = customTargets.emMin;
-    if (customTargets.emMax !== undefined) emMax = customTargets.emMax;
-    if (customTargets.caMin !== undefined) caMin = customTargets.caMin;
-    if (customTargets.caMax !== undefined) caMax = customTargets.caMax;
-    if (customTargets.pMin !== undefined) pMin = customTargets.pMin;
-    if (customTargets.pMax !== undefined) pMax = customTargets.pMax;
-  }
+    // Override with customTargets if user modified them in SNI / custom tab
+    if (customTargets) {
+      nutrientConstraints = nutrientConstraints.map(nc => {
+        let newMin = nc.min;
+        let newMax = nc.max;
+        let enabled = nc.enabled;
 
-  // Check if constraints or ingredients make it infeasible
-  // E.g., if SBM is selected but max constraint is <= 15% and no other high protein ingredient is available
-  const sbmIng = activeIngs.find(i => i.id === 'sbm');
-  const sbmConstrainedTight = sbmIng && sbmIng.hasConstraint && (sbmIng.maxConstraint ?? 100) <= 15;
-  const onlyEnergyIngs = activeIngs.every(i => i.category === 'energi' || i.id === 'premix');
+        if (nc.id === 'protein') {
+          if (customTargets.pkMin !== undefined) { newMin = customTargets.pkMin; enabled = true; }
+          if (customTargets.pkMax !== undefined) { newMax = customTargets.pkMax; enabled = true; }
+        } else if (nc.id === 'em') {
+          if (customTargets.emMin !== undefined) { newMin = customTargets.emMin; enabled = true; }
+          if (customTargets.emMax !== undefined) { newMax = customTargets.emMax; enabled = true; }
+        } else if (nc.id === 'calcium') {
+          if (customTargets.caMin !== undefined) { newMin = customTargets.caMin; enabled = true; }
+          if (customTargets.caMax !== undefined) { newMax = customTargets.caMax; enabled = true; }
+        } else if (nc.id === 'phosAvailable') {
+          if (customTargets.pMin !== undefined) { newMin = customTargets.pMin; enabled = true; }
+          if (customTargets.pMax !== undefined) { newMax = customTargets.pMax; enabled = true; }
+        }
 
-  // Colors for donut chart
-  const colors: Record<string, string> = {
-    jagung: '#22c55e',
-    dedak: '#7cf994',
-    sbm: '#ef9900',
-    ikan: '#006e2f',
-    premix: '#ffb95f',
-    cpo: '#38bdf8',
-    mbm: '#f97316',
-    lisin: '#a855f7'
-  };
+        // Also check if customTargets.nutrients dictionary was provided
+        if (customTargets.nutrients && customTargets.nutrients[nc.id]) {
+          const customEntry = customTargets.nutrients[nc.id];
+          newMin = customEntry.min;
+          newMax = customEntry.max;
+          enabled = customEntry.enabled;
+        }
 
-  if (sbmConstrainedTight || onlyEnergyIngs || activeIngs.length < 3) {
-    // Return Infeasible Result (Belum Layak)
-    const jagungPct = 65;
-    const dedakPct = 25;
-    const sbmPct = sbmConstrainedTight ? (sbmIng?.maxConstraint || 10) : 10;
-    const premixPct = 100 - (jagungPct + dedakPct + sbmPct);
-
-    const achievedPK = 17.8;
-    const achievedEM = 3080;
-    const achievedCa = 0.95;
-    const achievedP = 0.48;
-
-    const ingDetails = [
-      {
-        id: 'jagung',
-        name: 'Jagung Kuning',
-        percentage: jagungPct,
-        kg: (jagungPct / 100) * batchKg,
-        costPerKg: 5800,
-        totalCost: (jagungPct / 100) * batchKg * 5800,
-        color: '#ef9900',
-        icon: 'grain'
-      },
-      {
-        id: 'dedak',
-        name: 'Dedak Padi Halus',
-        percentage: dedakPct,
-        kg: (dedakPct / 100) * batchKg,
-        costPerKg: 4100,
-        totalCost: (dedakPct / 100) * batchKg * 4100,
-        color: '#62df7d',
-        icon: 'grass'
-      },
-      {
-        id: 'sbm',
-        name: 'Bungkil Kedelai (SBM)',
-        percentage: sbmPct,
-        kg: (sbmPct / 100) * batchKg,
-        costPerKg: 9200,
-        totalCost: (sbmPct / 100) * batchKg * 9200,
-        color: '#ba1a1a',
-        icon: 'spa'
-      }
-    ];
-
-    if (premixPct > 0) {
-      ingDetails.push({
-        id: 'premix',
-        name: 'Premix & Vitamin',
-        percentage: premixPct,
-        kg: (premixPct / 100) * batchKg,
-        costPerKg: 25000,
-        totalCost: (premixPct / 100) * batchKg * 25000,
-        color: '#ffb95f',
-        icon: 'science'
+        return { ...nc, min: newMin, max: newMax, enabled };
       });
     }
+  }
 
-    const totalCost = ingDetails.reduce((sum, i) => sum + i.totalCost, 0);
-    const costPerKg = Math.round(totalCost / batchKg);
-    const savingPerKg = Math.max(0, benchmarkPrice - costPerKg);
-    const savingPercent = benchmarkPrice > 0 ? Math.round((savingPerKg / benchmarkPrice) * 100) : 0;
-    const savingAmount = savingPerKg * batchKg;
+  // Pre-solve validation check
+  const validationErrors = validateLPInput({
+    ingredients: activeIngs,
+    nutrientConstraints,
+    batchKg,
+    marketPricePerKg: benchmarkPrice,
+  });
 
+  const batchNumber = '#CF-' + Math.floor(100 + Math.random() * 900);
+  const dateStr = 'Hari ini, ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+  const batchName = `${livestock === 'broiler' ? 'Broiler' : 'Layer'} ${phase} Batch`;
+
+  if (validationErrors.length > 0) {
     return {
       id: 'batch-' + Date.now(),
-      batchName: `${livestock === 'broiler' ? 'Broiler' : 'Layer'} ${phase} Batch`,
-      batchNumber: '#CF-' + Math.floor(100 + Math.random() * 900),
-      dateStr: 'Hari ini, ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+      batchName,
+      batchNumber,
+      dateStr,
       livestock,
       phase,
       totalBatchKg: batchKg,
       isFeasible: false,
-      totalCost,
-      costPerKg,
+      totalCost: 0,
+      costPerKg: 0,
+      costPerTon: 0,
       marketPrice: benchmarkPrice,
-      savingPercent,
-      savingAmount,
-      ingredients: ingDetails,
+      savingPercent: 0,
+      savingAmount: 0,
+      ingredients: [],
       nutrients: {
-        pk: { val: achievedPK, min: pkMin, max: pkMax, ok: achievedPK >= pkMin, percentProgress: 89 },
-        em: { val: achievedEM, min: emMin, max: emMax, ok: true, percentProgress: 98 },
-        ca: { val: achievedCa, min: caMin, max: caMax, ok: true, percentProgress: 85 },
-        p:  { val: achievedP,  min: pMin,  max: pMax,  ok: true, percentProgress: 90 }
+        pk: { val: 0, min: 0, max: 100, ok: false, percentProgress: 0 },
+        em: { val: 0, min: 0, max: 5000, ok: false, percentProgress: 0 },
+        ca: { val: 0, min: 0, max: 10, ok: false, percentProgress: 0 },
+        p:  { val: 0, min: 0, max: 5, ok: false, percentProgress: 0 },
       },
-      deficits: [
-        {
-          name: 'Protein Kasar (PK)',
-          target: `Min ${pkMin.toFixed(1)}%`,
-          current: `${achievedPK}%`,
-          gap: `Kurang ${(pkMin - achievedPK).toFixed(1)}%`,
-          progressPercent: 89,
-          color: 'bg-error'
-        },
-        {
-          name: 'Asam Amino Metionin',
-          target: 'Min 0.45%',
-          current: '0.32%',
-          gap: 'Kurang 0.13%',
-          progressPercent: 71,
-          color: 'bg-tertiary-container'
-        }
-      ],
-      causeText: `Bungkil kedelai (SBM) dibatasi maksimal ${sbmIng?.maxConstraint || 20}% pada setelan Anda, sehingga formula kekurangan sumber protein nabati utama untuk mencapai bobot ideal ayam.`,
-      expertAdvice: 'Tambahkan Tepung Ikan 3-5% atau perlonggar batas maksimal Bungkil Kedelai (SBM) menjadi minimal 25% agar target SNI tercapai secara ekonomis.'
+      solverStatus: 'infeasible',
+      solverMessage: validationErrors[0],
+      nutrientResults: [],
+      totalFormulaPct: 0,
+      causeText: validationErrors.join(' '),
+      expertAdvice: 'Perbaiki batas inklusi bahan atau target nutrisi yang bertentangan.',
+      deficits: validationErrors.map((err, idx) => ({
+        name: `Validasi Input #${idx + 1}`,
+        target: 'Valid',
+        current: 'Tidak Valid',
+        gap: err,
+        progressPercent: 0,
+        color: 'bg-error',
+      })),
     };
   }
 
-  // Otherwise, return Feasible Result (Layak)
-  const basePercentages: Record<string, number> = {
-    jagung: 52,
-    dedak: 20,
-    sbm: 20,
-    ikan: 5.5,
-    premix: 2.5
-  };
-
-  // Adjust for currently active ingredients
-  let totalRaw = 0;
-  activeIngs.forEach(ing => {
-    totalRaw += basePercentages[ing.id] || 10;
+  // Execute Simplex LP solver
+  const lpOutput = runLPSolver({
+    ingredients: activeIngs,
+    nutrientConstraints,
+    batchKg,
+    marketPricePerKg: benchmarkPrice,
   });
 
-  const ingDetails = activeIngs.map(ing => {
-    const rawPct = basePercentages[ing.id] || 10;
-    const normalizedPct = Number(((rawPct / totalRaw) * 100).toFixed(1));
-    const kg = Number(((normalizedPct / 100) * batchKg).toFixed(1));
-    const price = ing.currentPrice;
-    const itemTotal = Math.round(kg * price);
+  if (lpOutput.status !== 'optimal') {
+    // Collect deficits from unfulfilled constraints
+    const deficits = lpOutput.nutrients
+      .filter(n => n.status === 'below_min' || n.status === 'above_max')
+      .map(n => ({
+        name: n.name,
+        target: n.min !== null ? `Min ${n.min} ${n.unit}` : `Max ${n.max} ${n.unit}`,
+        current: `${Number(n.calculated.toFixed(2))} ${n.unit}`,
+        gap: n.status === 'below_min' && n.min !== null
+          ? `Kurang ${(n.min - n.calculated).toFixed(2)} ${n.unit}`
+          : `Lebih ${(n.calculated - (n.max ?? 0)).toFixed(2)} ${n.unit}`,
+        progressPercent: n.min && n.min > 0 ? Math.min(100, Math.round((n.calculated / n.min) * 100)) : 0,
+        color: 'bg-error',
+      }));
 
     return {
-      id: ing.id,
-      name: ing.name.split(' (')[0],
-      percentage: normalizedPct,
-      kg,
-      costPerKg: price,
-      totalCost: itemTotal,
-      color: colors[ing.id] || '#22c55e',
-      icon: ing.icon
+      id: 'batch-' + Date.now(),
+      batchName,
+      batchNumber,
+      dateStr,
+      livestock,
+      phase,
+      totalBatchKg: batchKg,
+      isFeasible: false,
+      totalCost: 0,
+      costPerKg: 0,
+      costPerTon: 0,
+      marketPrice: benchmarkPrice,
+      savingPercent: 0,
+      savingAmount: 0,
+      ingredients: [],
+      nutrients: {
+        pk: { val: 0, min: 0, max: 100, ok: false, percentProgress: 0 },
+        em: { val: 0, min: 0, max: 5000, ok: false, percentProgress: 0 },
+        ca: { val: 0, min: 0, max: 10, ok: false, percentProgress: 0 },
+        p:  { val: 0, min: 0, max: 5, ok: false, percentProgress: 0 },
+      },
+      solverStatus: lpOutput.status,
+      solverMessage: lpOutput.message,
+      nutrientResults: lpOutput.nutrients,
+      totalFormulaPct: 0,
+      causeText: lpOutput.message,
+      expertAdvice: 'Pilihlah bahan baku tambahan (seperti premix, asam amino sintetis, atau sumber mineral) atau longgarkan target nutrisi agar sistem LP dapat menemukan kombinasi biaya minimum.',
+      deficits,
     };
-  });
-
-  // Re-adjust sum of percentages to exact 100%
-  const sumPct = ingDetails.reduce((s, i) => s + i.percentage, 0);
-  if (ingDetails.length > 0 && sumPct !== 100) {
-    ingDetails[0].percentage = Number((ingDetails[0].percentage + (100 - sumPct)).toFixed(1));
-    ingDetails[0].kg = Number(((ingDetails[0].percentage / 100) * batchKg).toFixed(1));
-    ingDetails[0].totalCost = Math.round(ingDetails[0].kg * ingDetails[0].costPerKg);
   }
 
-  const totalCost = ingDetails.reduce((s, i) => s + i.totalCost, 0);
-  const costPerKg = Math.round(totalCost / batchKg);
-  const savingPerKg = Math.max(0, benchmarkPrice - costPerKg);
-  const savingPercent = benchmarkPrice > 0 ? Math.round((savingPerKg / benchmarkPrice) * 100) : 0;
-  const savingAmount = savingPerKg * batchKg;
+  // Find 4 key benchmark nutrients for legacy UI cards
+  const pkRes = lpOutput.nutrients.find(n => n.id === 'protein');
+  const emRes = lpOutput.nutrients.find(n => n.id === 'em');
+  const caRes = lpOutput.nutrients.find(n => n.id === 'calcium');
+  const pRes  = lpOutput.nutrients.find(n => n.id === 'phosAvailable') || lpOutput.nutrients.find(n => n.id === 'phosphorus');
+
+  const pkVal = Number((pkRes?.calculated ?? 0).toFixed(2));
+  const emVal = Math.round(emRes?.calculated ?? 0);
+  const caVal = Number((caRes?.calculated ?? 0).toFixed(2));
+  const pVal  = Number((pRes?.calculated ?? 0).toFixed(2));
 
   return {
     id: 'batch-' + Date.now(),
-    batchName: `${livestock === 'broiler' ? 'Broiler' : 'Layer'} ${phase} Batch`,
-    batchNumber: '#CF-' + Math.floor(100 + Math.random() * 900),
-    dateStr: 'Hari ini, ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+    batchName,
+    batchNumber,
+    dateStr,
     livestock,
     phase,
     totalBatchKg: batchKg,
     isFeasible: true,
-    totalCost,
-    costPerKg,
+    totalCost: Math.round(lpOutput.totalCost),
+    costPerKg: Math.round(lpOutput.costPerKg),
+    costPerTon: Math.round(lpOutput.costPerTon),
     marketPrice: benchmarkPrice,
-    savingPercent,
-    savingAmount,
-    ingredients: ingDetails,
+    savingPercent: Math.round(lpOutput.savingPercent),
+    savingAmount: Math.round(lpOutput.savingAmount),
+    ingredients: lpOutput.ingredients,
     nutrients: {
-      pk: { val: 20.2, min: pkMin, max: pkMax, ok: true, percentProgress: 82 },
-      em: { val: 3080, min: emMin, max: emMax, ok: true, percentProgress: 88 },
-      ca: { val: 0.95, min: caMin, max: caMax, ok: true, percentProgress: 75 },
-      p:  { val: 0.48, min: pMin,  max: pMax,  ok: true, percentProgress: 80 }
-    }
+      pk: {
+        val: pkVal,
+        min: pkRes?.min ?? 18,
+        max: pkRes?.max ?? 25,
+        ok: pkRes?.status === 'ok' || pkRes?.status === 'unconstrained',
+        percentProgress: pkRes?.min ? Math.min(100, Math.round((pkVal / pkRes.min) * 100)) : 100,
+      },
+      em: {
+        val: emVal,
+        min: emRes?.min ?? 2700,
+        max: emRes?.max ?? 3300,
+        ok: emRes?.status === 'ok' || emRes?.status === 'unconstrained',
+        percentProgress: emRes?.min ? Math.min(100, Math.round((emVal / emRes.min) * 100)) : 100,
+      },
+      ca: {
+        val: caVal,
+        min: caRes?.min ?? 0.8,
+        max: caRes?.max ?? 4.0,
+        ok: caRes?.status === 'ok' || caRes?.status === 'unconstrained',
+        percentProgress: caRes?.min ? Math.min(100, Math.round((caVal / caRes.min) * 100)) : 100,
+      },
+      p: {
+        val: pVal,
+        min: pRes?.min ?? 0.35,
+        max: pRes?.max ?? 1.0,
+        ok: pRes?.status === 'ok' || pRes?.status === 'unconstrained',
+        percentProgress: pRes?.min ? Math.min(100, Math.round((pVal / pRes.min) * 100)) : 100,
+      },
+    },
+    solverStatus: 'optimal',
+    solverMessage: lpOutput.message,
+    nutrientResults: lpOutput.nutrients,
+    totalFormulaPct: Number(lpOutput.totalFormulaPct.toFixed(2)),
   };
 }

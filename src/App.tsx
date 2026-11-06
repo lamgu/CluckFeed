@@ -25,6 +25,7 @@ import { HargaPasarModal } from './screens/HargaPasarModal';
 
 import { LivestockType, AgeUnit, FormulaResultData, PresetItem, HistoryFormulaItem, TargetNutrisi } from './types';
 import { solveFeedFormulation } from './utils/formulationSolver';
+import type { NutrientConstraintSpec } from './utils/lpSolver';
 
 // Dynamic data hooks
 import { useIngredients } from './hooks/useIngredients';
@@ -83,7 +84,7 @@ export default function App() {
     if (newTab) setActiveTab(newTab);
     try {
       window.history.pushState(
-        { view: newView, tab: newTab || activeTab },
+        { view: newView, tab: newTab || activeTab, _cluckfeed: true },
         '',
         window.location.pathname
       );
@@ -98,15 +99,22 @@ export default function App() {
 
   // Browser Back / Forward buttons handler
   useEffect(() => {
+    // Replace the initial history entry so there's always a known in-app state at the bottom
     try {
-      window.history.replaceState({ view: 'tab', tab: 'beranda' }, '', window.location.pathname);
+      window.history.replaceState({ view: 'tab', tab: 'beranda', _cluckfeed: true }, '', window.location.pathname);
     } catch {}
 
     const handlePopState = (event: PopStateEvent) => {
-      if (event.state && event.state.view) {
+      if (event.state && event.state._cluckfeed && event.state.view) {
+        // Known in-app state: restore it
         setCurrentView(event.state.view);
         if (event.state.tab) setActiveTab(event.state.tab);
       } else {
+        // Unknown / external state (hit real bottom of browser history).
+        // Push a fresh anchor so browser can't navigate away from the app.
+        try {
+          window.history.pushState({ view: 'tab', tab: 'beranda', _cluckfeed: true }, '', window.location.pathname);
+        } catch {}
         setCurrentView('tab');
         setActiveTab('beranda');
       }
@@ -147,21 +155,25 @@ export default function App() {
   }, [updateIngredient]);
 
   // ---- Calculate Formulation ----
-  const handleCalculate = useCallback((customNutrients?: Partial<TargetNutrisi>) => {
+  const handleCalculate = useCallback((customNutrients?: Partial<TargetNutrisi>, customConstraints?: NutrientConstraintSpec[]) => {
     const effectiveDays = ageUnit === 'minggu' ? ageValue * 7 : ageValue;
     let phaseStr = 'Grower';
     if (livestock === 'broiler') {
-      if (effectiveDays <= 14) phaseStr = 'Starter';
+      if (effectiveDays <= 12) phaseStr = 'Starter';
       else if (effectiveDays <= 28) phaseStr = 'Grower';
       else phaseStr = 'Finisher';
     } else {
-      if (effectiveDays <= 56) phaseStr = 'Starter Pullet';
-      else if (effectiveDays <= 112) phaseStr = 'Pullet Developer';
-      else phaseStr = 'Produksi (Peak)';
+      if (effectiveDays <= 35) phaseStr = 'Starter';
+      else if (effectiveDays <= 70) phaseStr = 'Grower';
+      else if (effectiveDays <= 105) phaseStr = 'Developer';
+      else if (effectiveDays <= 126) phaseStr = 'Pre-Layer';
+      else if (effectiveDays <= 315) phaseStr = 'Layer-1';
+      else if (effectiveDays <= 560) phaseStr = 'Layer-2';
+      else phaseStr = 'Layer-3';
     }
 
     const currentMarketPrice = livestock === 'broiler' ? marketPrices.broiler : marketPrices.layer;
-    const result = solveFeedFormulation(ingredients, livestock, phaseStr, batchKg, customNutrients, currentMarketPrice);
+    const result = solveFeedFormulation(ingredients, livestock, phaseStr, batchKg, customNutrients, currentMarketPrice, customConstraints);
     setCurrentResult(result);
     setResultSource('workflow-step3');
     navigateTo('workflow-result');
@@ -400,6 +412,7 @@ export default function App() {
               setBatchKg={setBatchKg}
               onCalculate={handleCalculate}
               onBack={() => navigateTo('workflow-step2')}
+              onGoHome={handleGoHome}
             />
           )}
 

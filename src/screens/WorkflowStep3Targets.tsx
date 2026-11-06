@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LivestockType, AgeUnit, TargetNutrisi } from '../types';
+import {
+  NutrientConstraintSpec,
+  NUTRIENT_SPECS,
+  PHASE_PRESETS,
+  buildConstraintsFromPreset
+} from '../utils/lpSolver';
+import { getPresetKey } from '../utils/formulationSolver';
 
 interface WorkflowStep3Props {
   livestock: LivestockType;
@@ -10,8 +17,9 @@ interface WorkflowStep3Props {
   setAgeUnit: (u: AgeUnit) => void;
   batchKg: number;
   setBatchKg: (b: number) => void;
-  onCalculate: (customNutrients?: Partial<TargetNutrisi>) => void;
+  onCalculate: (customNutrients?: Partial<TargetNutrisi>, customConstraints?: NutrientConstraintSpec[]) => void;
   onBack: () => void;
+  onGoHome?: () => void;
 }
 
 export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
@@ -24,7 +32,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
   batchKg,
   setBatchKg,
   onCalculate,
-  onBack
+  onBack,
+  onGoHome
 }) => {
   const [nutrientTab, setNutrientTab] = useState<'sni' | 'custom'>('sni');
   const [saveAsPreset, setSaveAsPreset] = useState(false);
@@ -202,24 +211,46 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
 
   const detectedPhase = currentSpek.phase;
 
+  const [nutrientConstraints, setNutrientConstraints] = useState<NutrientConstraintSpec[]>(() => {
+    const key = getPresetKey(livestock, currentSpek.phase);
+    const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
+    return buildConstraintsFromPreset(p);
+  });
+
+  // Auto-sync nutrient constraints when phase changes in SNI mode
+  useEffect(() => {
+    if (nutrientTab === 'sni') {
+      const key = getPresetKey(livestock, detectedPhase);
+      const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
+      setNutrientConstraints(buildConstraintsFromPreset(p));
+    }
+  }, [livestock, detectedPhase, nutrientTab]);
+
+  const updateConstraint = (id: string, partial: Partial<NutrientConstraintSpec>) => {
+    setNutrientConstraints(prev =>
+      prev.map(item => (item.id === id ? { ...item, ...partial } : item))
+    );
+  };
+
+  const resetToCurrentPhase = () => {
+    const key = getPresetKey(livestock, detectedPhase);
+    const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
+    setNutrientConstraints(buildConstraintsFromPreset(p));
+  };
+
   const handleCalculate = () => {
     setIsCalculating(true);
     setTimeout(() => {
       setIsCalculating(false);
       if (nutrientTab === 'custom') {
-        onCalculate({
-          pkMin: customPkMin,
-          pkMax: customPkMax,
-          emMin: customEmMin,
-          emMax: customEmMax
-        });
+        onCalculate(undefined, nutrientConstraints);
       } else {
         onCalculate({
           pkMin: currentSpek.pkMin,
           pkMax: currentSpek.pkMax,
           emMin: currentSpek.emMin,
           emMax: currentSpek.emMax
-        });
+        }, nutrientConstraints);
       }
     }, 700);
   };
@@ -652,116 +683,94 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
 
           {/* Custom Panel */}
           {nutrientTab === 'custom' && (
-            <div className="flex flex-col bg-white p-4 rounded-[20px] shadow-xs border border-[#e5e7eb] gap-4">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col bg-white p-4 rounded-[20px] shadow-xs border border-[#e5e7eb] gap-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[#e6eeff]">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#ef9900] animate-pulse"></span>
-                  <span className="font-label-md text-[12px] font-bold text-[#121c2a]">
-                    Parameter Nutrisi Disesuaikan
+                  <span className="font-label-md text-[13px] font-bold text-[#121c2a]">
+                    Matriks 22 Batasan Nutrisi LP
                   </span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setNutrientTab('sni')}
-                  className="font-label-sm text-[11px] text-[#006e2f] font-bold hover:underline flex items-center gap-0.5"
+                  onClick={resetToCurrentPhase}
+                  className="font-label-sm text-[11px] text-[#006e2f] font-bold hover:underline flex items-center gap-0.5 px-2 py-1 rounded-md bg-[#7cf994]/20"
                 >
                   <span className="material-symbols-outlined text-[14px]">restart_alt</span>
-                  Reset ke standar
+                  Reset ke Spek Fase
                 </button>
               </div>
 
-              {/* Protein Kasar Input */}
-              <div className="flex flex-col gap-1.5 p-3 bg-[#f8f9ff] rounded-[14px] border border-[#e6eeff]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-label-md text-[13px] text-[#121c2a] font-bold">
-                      Protein Kasar (PK)
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-[#ffddb8] text-[#653e00] font-label-sm text-[10px] font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#855300]"></span> Diubah
-                    </span>
-                  </div>
-                  <span className="font-body-sm text-[11px] text-[#6d7b6c]">Standar: 19.0 - 21.0%</span>
-                </div>
+              <p className="text-[11px] text-[#6d7b6c] -mt-1">
+                Centang parameter nutrisi yang ingin dijadikan batasan linear programming (Simplex LP). Kosongkan bila tidak dibatasi.
+              </p>
 
-                <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className="flex flex-col">
-                    <span className="font-label-sm text-[10px] text-[#6d7b6c] mb-0.5">Min (%)</span>
-                    <div className="bg-[#eff4ff] px-3 py-1.5 rounded-[10px] flex items-center justify-between border border-[#e6eeff]">
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={customPkMin}
-                        onChange={(e) => setCustomPkMin(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-transparent font-title-md text-[14px] font-bold text-[#121c2a] focus:outline-none"
-                      />
-                      <span className="font-body-sm text-[12px] text-[#6d7b6c]">%</span>
+              {/* 22 Nutrients List */}
+              <div className="flex flex-col gap-2 max-h-[380px] overflow-y-auto pr-1 phone-scrollbar">
+                {nutrientConstraints.map(nc => (
+                  <div
+                    key={nc.id}
+                    className={`p-2.5 rounded-[12px] border transition-all ${
+                      nc.enabled
+                        ? 'bg-[#eff4ff]/60 border-[#22c55e]/50'
+                        : 'bg-[#f8f9ff] border-[#e6eeff] opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
+                        <input
+                          type="checkbox"
+                          checked={nc.enabled}
+                          onChange={e => updateConstraint(nc.id, { enabled: e.target.checked })}
+                          className="w-4 h-4 rounded text-[#006e2f] focus:ring-[#22c55e]"
+                        />
+                        <span className={`text-[12px] font-bold truncate ${nc.enabled ? 'text-[#121c2a]' : 'text-slate-500'}`}>
+                          {nc.name}
+                        </span>
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-mono shrink-0 px-1.5 py-0.5 bg-white rounded border border-slate-200">
+                        {nc.unit}
+                      </span>
                     </div>
+
+                    {nc.enabled && (
+                      <div className="grid grid-cols-2 gap-2 mt-1 pl-6">
+                        <div className="flex items-center bg-white px-2 py-1 rounded-[8px] border border-slate-200">
+                          <span className="text-[10px] text-slate-400 font-medium w-9 shrink-0">Min:</span>
+                          <input
+                            type="number"
+                            step="any"
+                            placeholder="Tidak ada"
+                            value={nc.min ?? ''}
+                            onChange={e => {
+                              const val = e.target.value === '' ? null : parseFloat(e.target.value);
+                              updateConstraint(nc.id, { min: isNaN(val as any) ? null : val });
+                            }}
+                            className="w-full bg-transparent text-[12px] font-bold text-[#121c2a] focus:outline-none"
+                          />
+                        </div>
+                        <div className="flex items-center bg-white px-2 py-1 rounded-[8px] border border-slate-200">
+                          <span className="text-[10px] text-slate-400 font-medium w-9 shrink-0">Max:</span>
+                          <input
+                            type="number"
+                            step="any"
+                            placeholder="Tidak ada"
+                            value={nc.max ?? ''}
+                            onChange={e => {
+                              const val = e.target.value === '' ? null : parseFloat(e.target.value);
+                              updateConstraint(nc.id, { max: isNaN(val as any) ? null : val });
+                            }}
+                            className="w-full bg-transparent text-[12px] font-bold text-[#121c2a] focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="flex flex-col">
-                    <span className="font-label-sm text-[10px] text-[#6d7b6c] mb-0.5">Maks (%)</span>
-                    <div className="bg-[#eff4ff] px-3 py-1.5 rounded-[10px] flex items-center justify-between border border-[#e6eeff]">
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={customPkMax}
-                        onChange={(e) => setCustomPkMax(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-transparent font-title-md text-[14px] font-bold text-[#121c2a] focus:outline-none"
-                      />
-                      <span className="font-body-sm text-[12px] text-[#6d7b6c]">%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] bg-[#ffddb8]/50 text-[#653e00]">
-                  <span className="material-symbols-outlined text-[16px] text-[#855300] shrink-0">warning</span>
-                  <span className="font-body-sm text-[11px]">
-                    Nilai sedikit di atas target grower standard, pakan berpotensi lebih mahal.
-                  </span>
-                </div>
-              </div>
-
-              {/* Energi Metabolis Input */}
-              <div className="flex flex-col gap-1.5 p-3 bg-[#f8f9ff] rounded-[14px] border border-[#e6eeff]">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-md text-[13px] text-[#121c2a] font-bold">
-                    Energi Metabolis (EM)
-                  </span>
-                  <span className="font-body-sm text-[11px] text-[#6d7b6c]">Standar: 3050 - 3150 kkal</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className="flex flex-col">
-                    <span className="font-label-sm text-[10px] text-[#6d7b6c] mb-0.5">Min (kkal)</span>
-                    <div className="bg-[#eff4ff] px-3 py-1.5 rounded-[10px] flex items-center justify-between border border-[#e6eeff]">
-                      <input
-                        type="number"
-                        value={customEmMin}
-                        onChange={(e) => setCustomEmMin(parseInt(e.target.value) || 0)}
-                        className="w-full bg-transparent font-title-md text-[14px] font-bold text-[#121c2a] focus:outline-none"
-                      />
-                      <span className="font-label-sm text-[10px] text-[#6d7b6c]">kkal</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col">
-                    <span className="font-label-sm text-[10px] text-[#6d7b6c] mb-0.5">Maks (kkal)</span>
-                    <div className="bg-[#eff4ff] px-3 py-1.5 rounded-[10px] flex items-center justify-between border border-[#e6eeff]">
-                      <input
-                        type="number"
-                        value={customEmMax}
-                        onChange={(e) => setCustomEmMax(parseInt(e.target.value) || 0)}
-                        className="w-full bg-transparent font-title-md text-[14px] font-bold text-[#121c2a] focus:outline-none"
-                      />
-                      <span className="font-label-sm text-[10px] text-[#6d7b6c]">kkal</span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
 
               {/* Save as preset switch */}
-              <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-1">
                 <div className="flex flex-col">
                   <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
                     Simpan sebagai preset baru
@@ -802,6 +811,16 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
               <span className="material-symbols-outlined text-[19px]">arrow_back</span>
               <span>Ubah</span>
             </button>
+
+            {onGoHome && (
+              <button
+                onClick={onGoHome}
+                className="h-12 px-4 rounded-full bg-[#eff4ff] text-[#006e2f] font-label-lg text-[13px] font-semibold flex items-center justify-center gap-1 active:bg-[#d0dbed] transition-colors shadow-xs border border-[#e6eeff]"
+              >
+                <span className="material-symbols-outlined text-[19px]">home</span>
+                <span className="hidden sm:inline">Beranda</span>
+              </button>
+            )}
 
             <button
               type="button"

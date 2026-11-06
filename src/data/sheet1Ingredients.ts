@@ -28,7 +28,7 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     tryptophan: 0.043,
     arginine: 0.315,
     isoleucine: 0.217,
-    valine: 0.29,
+    valine: 0.290,
     choline: 505.40,
     minConstraint: 40,
     maxConstraint: 65,
@@ -66,7 +66,7 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     tryptophan: 0.091,
     arginine: 0.713,
     isoleucine: 0.282,
-    valine: 0.41,
+    valine: 0.410,
     choline: 1073.50,
     minConstraint: 0,
     maxConstraint: 20,
@@ -79,8 +79,8 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
   },
   {
     id: 'sbm',
-    name: 'SBM / BK Kedelai',
-    subname: 'Soybean Meal / Bungkil Kedelai Import',
+    name: 'SBM/BK Kedelai',
+    subname: 'Bungkil Kedelai / Soybean Meal',
     category: 'protein',
     defaultPrice: 9200,
     currentPrice: 9200,
@@ -104,7 +104,7 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     tryptophan: 0.521,
     arginine: 3.027,
     isoleucine: 1.834,
-    valine: 1.87,
+    valine: 1.870,
     choline: 2423.45,
     minConstraint: 15,
     maxConstraint: 30,
@@ -113,12 +113,12 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     selected: true,
     inStockKg: 850,
     tag1: 'Protein 45.9%',
-    tag2: 'Lysine 2.44%'
+    tag2: 'EM 2235 kkal'
   },
   {
     id: 'mbm',
-    name: 'MBM / Tep Daging Tulang',
-    subname: 'Meat and Bone Meal Sumber Protein Hewani',
+    name: 'MBM/Tep Daging Tulang',
+    subname: 'Meat Bone Meal / Tepung Daging Tulang',
     category: 'protein',
     defaultPrice: 11500,
     currentPrice: 11500,
@@ -142,21 +142,21 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     tryptophan: 0.185,
     arginine: 2.979,
     isoleucine: 0.971,
-    valine: 1.35,
+    valine: 1.350,
     choline: 1900.00,
     minConstraint: 0,
-    maxConstraint: 8,
+    maxConstraint: 6,
     hasConstraint: false,
     icon: 'pets',
     selected: true,
     inStockKg: 280,
     tag1: 'Protein 49.1%',
-    tag2: 'Kalsium 9.8%'
+    tag2: 'Ca 9.82%'
   },
   {
     id: 'cpo',
     name: 'Crude Palm Oil',
-    subname: 'Minyak Sawit Kasar Penambah Energi',
+    subname: 'Minyak Sawit Kasar / CPO',
     category: 'energi',
     defaultPrice: 13000,
     currentPrice: 13000,
@@ -183,21 +183,21 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     valine: 0.00,
     choline: 0.00,
     minConstraint: 0,
-    maxConstraint: 3,
+    maxConstraint: 4,
     hasConstraint: false,
-    icon: 'oil_barrel',
-    selected: false,
-    inStockKg: 200,
-    tag1: 'Energi 8600 kkal',
-    tag2: 'Lemak 99%'
+    icon: 'water_drop',
+    selected: true,
+    inStockKg: 400,
+    tag1: 'Lemak 99%',
+    tag2: 'EM 8600 kkal'
   },
   {
     id: 'limestone',
-    name: 'LIMESTONE / Batu Kapur',
-    subname: 'Tepung Kalsium Karbonat Murni',
+    name: 'LIMESTONE/Batu Kapur',
+    subname: 'Batu Kapur / Kalsium Karbonat',
     category: 'mineral',
-    defaultPrice: 1500,
-    currentPrice: 1500,
+    defaultPrice: 400,
+    currentPrice: 400,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
@@ -220,20 +220,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 10,
     hasConstraint: false,
     icon: 'diamond',
     selected: true,
-    inStockKg: 600,
-    tag1: 'Kalsium 38%',
-    tag2: 'Mineral Tulang'
+    inStockKg: 500,
+    tag1: 'Ca 38%',
+    tag2: 'Mineral'
   },
   {
     id: 'dcp',
     name: 'DCP',
-    subname: 'Dicalcium Phosphate Sumber P & Ca',
+    subname: 'Dicalcium Phosphate / Fosfor Tersedia',
     category: 'mineral',
-    defaultPrice: 16000,
-    currentPrice: 16000,
+    defaultPrice: 18000,
+    currentPrice: 18000,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
@@ -256,20 +258,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 3,
     hasConstraint: false,
-    icon: 'science',
+    icon: 'diamond',
     selected: true,
-    inStockKg: 180,
-    tag1: 'Fosfor 18%',
-    tag2: 'Kalsium 24%'
+    inStockKg: 200,
+    tag1: 'P Av 18%',
+    tag2: 'Ca 24%'
   },
   {
     id: 'l-lysine',
     name: 'L-LYSINE',
-    subname: 'Asam Amino Sintetis Pertumbuhan',
+    subname: 'L-Lisina Sintetis (78.95% Lys)',
     category: 'aditif',
-    defaultPrice: 38000,
-    currentPrice: 38000,
+    defaultPrice: 23000,
+    currentPrice: 23000,
     energy: 3728.00,
     protein: 94.50,
     fat: 0.00,
@@ -292,20 +296,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 1,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
+    selected: true,
     inStockKg: 50,
     tag1: 'Lysine 78.95%',
-    tag2: 'Protein 94.5%'
+    tag2: 'Aditif Murni'
   },
   {
     id: 'dl-methionine',
     name: 'DL-METHIONINE',
-    subname: 'Asam Amino Sintetis Bulu & Daging',
+    subname: 'DL-Metionina Sintetis (98.98% Met)',
     category: 'aditif',
-    defaultPrice: 48000,
-    currentPrice: 48000,
+    defaultPrice: 90000,
+    currentPrice: 90000,
     energy: 3652.00,
     protein: 58.00,
     fat: 0.00,
@@ -328,20 +334,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 1,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 40,
-    tag1: 'Methionine 98.98%',
-    tag2: 'Met+Cys 98.98%'
+    selected: true,
+    inStockKg: 30,
+    tag1: 'Met 98.98%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'l-threonine',
     name: 'L-THREONINE',
-    subname: 'Asam Amino Imunitas & Pencernaan',
+    subname: 'L-Treonina Sintetis (97.99% Thr)',
     category: 'aditif',
-    defaultPrice: 42000,
-    currentPrice: 42000,
+    defaultPrice: 28000,
+    currentPrice: 28000,
     energy: 3375.00,
     protein: 72.50,
     fat: 0.00,
@@ -364,20 +372,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 1,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 30,
-    tag1: 'Threonine 97.99%',
-    tag2: 'Protein 72.5%'
+    selected: true,
+    inStockKg: 20,
+    tag1: 'Thr 97.99%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'l-tryptophan',
     name: 'L-TRYPTOPHAN',
-    subname: 'Asam Amino Pengatur Nafsu Makan',
+    subname: 'L-Triptofan Sintetis (97.9% Trp)',
     category: 'aditif',
-    defaultPrice: 95000,
-    currentPrice: 95000,
+    defaultPrice: 115000,
+    currentPrice: 115000,
     energy: 4027.00,
     protein: 84.00,
     fat: 0.00,
@@ -400,20 +410,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 0.5,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 15,
-    tag1: 'Tryptophan 97.9%',
-    tag2: 'Protein 84%'
+    selected: true,
+    inStockKg: 5,
+    tag1: 'Trp 97.9%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'l-arginine',
     name: 'L-ARGININE',
-    subname: 'Asam Amino Performa & Vaskular',
+    subname: 'L-Arginin Sintetis (99% Arg)',
     category: 'aditif',
-    defaultPrice: 65000,
-    currentPrice: 65000,
+    defaultPrice: 95000,
+    currentPrice: 95000,
     energy: 3074.00,
     protein: 201.00,
     fat: 0.00,
@@ -436,20 +448,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 0.5,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 20,
-    tag1: 'Arginine 99.0%',
-    tag2: 'Protein 201%'
+    selected: true,
+    inStockKg: 10,
+    tag1: 'Arg 99%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'l-isoleucine',
     name: 'L-ISOLEUCINE',
-    subname: 'Asam Amino Jaringan Otot',
+    subname: 'L-Isoleusin Sintetis (99% Ile)',
     category: 'aditif',
-    defaultPrice: 70000,
-    currentPrice: 70000,
+    defaultPrice: 65000,
+    currentPrice: 65000,
     energy: 5772.00,
     protein: 66.00,
     fat: 0.00,
@@ -472,20 +486,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 99.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 0.5,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 20,
-    tag1: 'Isoleucine 99.0%',
-    tag2: 'EM 5772 kkal'
+    selected: true,
+    inStockKg: 5,
+    tag1: 'Ile 99%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'l-valine',
     name: 'L-VALINE',
-    subname: 'Asam Amino Daya Tahan & Koordinasi',
+    subname: 'L-Valin Sintetis (99% Val)',
     category: 'aditif',
-    defaultPrice: 62000,
-    currentPrice: 62000,
+    defaultPrice: 45000,
+    currentPrice: 45000,
     energy: 5045.00,
     protein: 74.00,
     fat: 0.00,
@@ -508,20 +524,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 99.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 0.5,
     hasConstraint: false,
     icon: 'medication',
-    selected: false,
-    inStockKg: 20,
-    tag1: 'Valine 99.0%',
-    tag2: 'EM 5045 kkal'
+    selected: true,
+    inStockKg: 10,
+    tag1: 'Val 99%',
+    tag2: 'Aditif Murni'
   },
   {
     id: 'choline-60',
     name: 'CHOLINE 60%',
-    subname: 'Choline Chloride Pencegah Lemak Hati',
+    subname: 'Kolin Klorida 60% (Choline 517.241 mg/kg)',
     category: 'aditif',
-    defaultPrice: 32000,
-    currentPrice: 32000,
+    defaultPrice: 19000,
+    currentPrice: 19000,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
@@ -544,20 +562,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 517241.38,
+    minConstraint: 0,
+    maxConstraint: 0.5,
     hasConstraint: false,
     icon: 'science',
-    selected: false,
-    inStockKg: 60,
-    tag1: 'Kolin 517.241',
-    tag2: 'Aditif Murni'
+    selected: true,
+    inStockKg: 50,
+    tag1: 'Kolin 60%',
+    tag2: 'Aditif'
   },
   {
     id: 'garam',
     name: 'GARAM',
-    subname: 'Garam Dapur NaCl Pakan',
+    subname: 'Sodium Klorida / NaCl Pakan (Na 38.9%, Cl 60.1%)',
     category: 'mineral',
-    defaultPrice: 3500,
-    currentPrice: 3500,
+    defaultPrice: 3000,
+    currentPrice: 3000,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
@@ -580,20 +600,22 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 1,
     hasConstraint: false,
-    icon: 'grain',
+    icon: 'diamond',
     selected: true,
-    inStockKg: 300,
-    tag1: 'Natrium 38.9%',
-    tag2: 'Klorida 60.1%'
+    inStockKg: 100,
+    tag1: 'Na 38.9%',
+    tag2: 'Cl 60.1%'
   },
   {
     id: 'sodium-bicarb',
     name: 'SODIUM-BICARB',
-    subname: 'Sodium Bikarbonat Anti-Heat Stress',
+    subname: 'Natrium Bikarbonat / Soda Kue Pakan (Na 26.8%)',
     category: 'mineral',
-    defaultPrice: 8500,
-    currentPrice: 8500,
+    defaultPrice: 5000,
+    currentPrice: 5000,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
@@ -616,158 +638,106 @@ export const CSV_SHEET1_INGREDIENTS: Ingredient[] = [
     isoleucine: 0.00,
     valine: 0.00,
     choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 1,
     hasConstraint: false,
-    icon: 'science',
-    selected: false,
-    inStockKg: 150,
-    tag1: 'Natrium 26.8%',
-    tag2: 'Elektrolit'
+    icon: 'diamond',
+    selected: true,
+    inStockKg: 50,
+    tag1: 'Na 26.8%',
+    tag2: 'Alkali'
   },
   {
     id: 'premix',
     name: 'VIT MIN PREMIX',
-    subname: 'Premix Vitamin Kompleks & Trace Mineral',
+    subname: 'Vitamin Mineral Premix Broiler/Layer',
     category: 'aditif',
-    defaultPrice: 25000,
-    currentPrice: 25000,
+    defaultPrice: 50000,
+    currentPrice: 50000,
     energy: 0.00,
     protein: 0.00,
     fat: 0.00,
     fiber: 0.00,
     pati: 0.00,
-    moisture: 2.00,
-    dryMatter: 98.00,
-    ash: 85.00,
-    calcium: 18.00,
-    phosphorus: 9.00,
-    phosAvailable: 9.00,
-    sodium: 2.50,
-    chloride: 1.50,
-    lysine: 1.00,
-    methionine: 1.00,
-    metCys: 1.00,
-    threonine: 0.50,
-    tryptophan: 0.20,
-    arginine: 0.50,
-    isoleucine: 0.50,
-    valine: 0.50,
-    choline: 20000.00,
-    isFixed: true,
-    fixedPercent: 2.5,
-    hasConstraint: true,
+    moisture: 0.00,
+    dryMatter: 0.00,
+    ash: 0.00,
+    calcium: 0.00,
+    phosphorus: 0.00,
+    phosAvailable: 0.00,
+    sodium: 0.00,
+    chloride: 0.00,
+    lysine: 0.00,
+    methionine: 0.00,
+    metCys: 0.00,
+    threonine: 0.00,
+    tryptophan: 0.00,
+    arginine: 0.00,
+    isoleucine: 0.00,
+    valine: 0.00,
+    choline: 0.00,
+    minConstraint: 0,
+    maxConstraint: 2.5,
+    hasConstraint: false,
+    isFixed: false,
     icon: 'science',
     selected: true,
     inStockKg: 150,
-    tag1: 'Kalsium 18%',
-    tag2: 'Dosis 2.5%'
+    tag1: 'Mikro Premix',
+    tag2: 'Dosis 0.5-2.5%'
   }
 ];
 
-export interface NutrientColumnMeta {
+export interface NutrientColumnDef {
   key: keyof Ingredient;
   label: string;
   unit: string;
-  category: 'utama' | 'makro' | 'mineral' | 'asam-amino';
+  category: 'energi' | 'makro' | 'mineral' | 'asam_amino';
   description: string;
 }
 
-export const INGREDIENT_NUTRIENT_COLUMNS: NutrientColumnMeta[] = [
-  { key: 'energy', label: 'Energi Met', unit: 'kkal/kg', category: 'utama', description: 'Energi metabolis pakan' },
-  { key: 'protein', label: 'Protein', unit: '%', category: 'utama', description: 'Protein kasar bahan pakan' },
-  { key: 'fat', label: 'Lemak', unit: '%', category: 'makro', description: 'Kadar lemak kasar' },
-  { key: 'fiber', label: 'Serat K', unit: '%', category: 'makro', description: 'Kadar serat kasar' },
-  { key: 'pati', label: 'Pati', unit: '%', category: 'makro', description: 'Kandungan karbohidrat pati' },
-  { key: 'moisture', label: 'K. Air', unit: '%', category: 'makro', description: 'Kadar air pakan' },
-  { key: 'dryMatter', label: 'B Kering', unit: '%', category: 'makro', description: 'Bahan kering pakan' },
-  { key: 'ash', label: 'Abu', unit: '%', category: 'makro', description: 'Kadar abu anorganik' },
-  { key: 'calcium', label: 'Calcium', unit: '%', category: 'mineral', description: 'Kalsium pakan' },
-  { key: 'phosphorus', label: 'Phos Tot', unit: '%', category: 'mineral', description: 'Fosfor total bahan' },
-  { key: 'phosAvailable', label: 'Phos Av', unit: '%', category: 'mineral', description: 'Fosfor tersedia (aP)' },
-  { key: 'sodium', label: 'Na', unit: '%', category: 'mineral', description: 'Natrium bahan' },
-  { key: 'chloride', label: 'Cl', unit: '%', category: 'mineral', description: 'Klorida bahan' },
-  { key: 'lysine', label: 'Lysine ter', unit: '%', category: 'asam-amino', description: 'Lisin tercerna' },
-  { key: 'methionine', label: 'Methionine ter', unit: '%', category: 'asam-amino', description: 'Metionin tercerna' },
-  { key: 'metCys', label: 'Met+Cys ter', unit: '%', category: 'asam-amino', description: 'Metionin + Sistin tercerna' },
-  { key: 'threonine', label: 'Threonine ter', unit: '%', category: 'asam-amino', description: 'Treonin tercerna' },
-  { key: 'tryptophan', label: 'Tryptophane ter', unit: '%', category: 'asam-amino', description: 'Triptofan tercerna' },
-  { key: 'arginine', label: 'Arginine ter', unit: '%', category: 'asam-amino', description: 'Arginin tercerna' },
-  { key: 'isoleucine', label: 'Isoleucine ter', unit: '%', category: 'asam-amino', description: 'Isoleusin tercerna' },
-  { key: 'valine', label: 'Valine terc', unit: '%', category: 'asam-amino', description: 'Valin tercerna' },
-  { key: 'choline', label: 'Choline', unit: 'mg/kg', category: 'asam-amino', description: 'Kolin pakan' },
+export const INGREDIENT_NUTRIENT_COLUMNS: NutrientColumnDef[] = [
+  { key: 'energy', label: 'Energi Met', unit: 'kkal/kg', category: 'energi', description: 'Energi metabolis siap serap' },
+  { key: 'protein', label: 'Protein Kasar', unit: '%', category: 'makro', description: 'Total protein kasar (PK)' },
+  { key: 'fat', label: 'Lemak Kasar', unit: '%', category: 'makro', description: 'Ekstrak eter/lemak' },
+  { key: 'fiber', label: 'Serat Kasar', unit: '%', category: 'makro', description: 'Serat kasar (SK)' },
+  { key: 'pati', label: 'Pati', unit: '%', category: 'makro', description: 'Karbohidrat pati mudah cerna' },
+  { key: 'moisture', label: 'Kadar Air', unit: '%', category: 'makro', description: 'Kadar air maksimal' },
+  { key: 'dryMatter', label: 'Bahan Kering', unit: '%', category: 'makro', description: 'Total bahan kering' },
+  { key: 'ash', label: 'Kadar Abu', unit: '%', category: 'makro', description: 'Sisa anorganik/mineral' },
+  { key: 'calcium', label: 'Kalsium (Ca)', unit: '%', category: 'mineral', description: 'Kalsium total' },
+  { key: 'phosphorus', label: 'Fosfor Total', unit: '%', category: 'mineral', description: 'Total fosfor (P)' },
+  { key: 'phosAvailable', label: 'Fosfor Tersedia', unit: '%', category: 'mineral', description: 'Available Phosphorus (aP)' },
+  { key: 'sodium', label: 'Natrium (Na)', unit: '%', category: 'mineral', description: 'Elektrolit sodium' },
+  { key: 'chloride', label: 'Klorida (Cl)', unit: '%', category: 'mineral', description: 'Elektrolit klorida' },
+  { key: 'lysine', label: 'Lisin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Lysine' },
+  { key: 'methionine', label: 'Metionin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Methionine' },
+  { key: 'metCys', label: 'Met + Cys Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Met + Cys' },
+  { key: 'threonine', label: 'Treonin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Threonine' },
+  { key: 'tryptophan', label: 'Triptofan Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Tryptophan' },
+  { key: 'arginine', label: 'Arginin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Arginine' },
+  { key: 'isoleucine', label: 'Isoleusin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Isoleucine' },
+  { key: 'valine', label: 'Valin Tercerna', unit: '%', category: 'asam_amino', description: 'Digestible Valine' },
+  { key: 'choline', label: 'Kolin', unit: 'mg/kg', category: 'asam_amino', description: 'Choline chloride aktif' },
 ];
 
-/**
- * AI Feed Nutrition Knowledge Base for Auto-Fill Helper
- */
 export const AI_FEED_KNOWLEDGE_BASE: Record<string, Partial<Ingredient>> = {
-  'jagung': {
-    category: 'energi', energy: 3350, protein: 7.7, fat: 3.7, fiber: 2.3, pati: 63.89, moisture: 14.0, dryMatter: 86.0, ash: 1.3, calcium: 0.02, phosphorus: 0.24, phosAvailable: 0.08, sodium: 0.01, chloride: 0.06, lysine: 0.174, methionine: 0.141, metCys: 0.282, threonine: 0.206, tryptophan: 0.043, arginine: 0.315, isoleucine: 0.217, valine: 0.29, choline: 505.4
-  },
-  'dedak': {
-    category: 'energi', energy: 2650, protein: 11.2, fat: 12.3, fiber: 10.0, pati: 29.41, moisture: 11.2, dryMatter: 88.8, ash: 10.8, calcium: 0.46, phosphorus: 1.36, phosAvailable: 0.13, sodium: 0.01, chloride: 0.05, lysine: 0.332, methionine: 0.166, metCys: 0.324, threonine: 0.257, tryptophan: 0.091, arginine: 0.713, isoleucine: 0.282, valine: 0.41, choline: 1073.5
-  },
-  'sbm': {
-    category: 'protein', energy: 2235, protein: 45.9, fat: 1.1, fiber: 3.9, pati: 0.87, moisture: 12.3, dryMatter: 87.7, ash: 6.9, calcium: 0.27, phosphorus: 0.64, phosAvailable: 0.23, sodium: 0.02, chloride: 0.03, lysine: 2.435, methionine: 0.551, metCys: 1.102, threonine: 1.503, tryptophan: 0.521, arginine: 3.027, isoleucine: 1.834, valine: 1.87, choline: 2423.45
-  },
-  'kedelai': {
-    category: 'protein', energy: 2235, protein: 45.9, fat: 1.1, fiber: 3.9, pati: 0.87, moisture: 12.3, dryMatter: 87.7, ash: 6.9, calcium: 0.27, phosphorus: 0.64, phosAvailable: 0.23, sodium: 0.02, chloride: 0.03, lysine: 2.435, methionine: 0.551, metCys: 1.102, threonine: 1.503, tryptophan: 0.521, arginine: 3.027, isoleucine: 1.834, valine: 1.87, choline: 2423.45
-  },
-  'mbm': {
-    category: 'protein', energy: 2450, protein: 49.1, fat: 7.6, fiber: 0.73, pati: 0.0, moisture: 5.9, dryMatter: 94.1, ash: 32.0, calcium: 9.82, phosphorus: 4.96, phosAvailable: 4.96, sodium: 0.60, chloride: 0.35, lysine: 1.724, methionine: 0.447, metCys: 0.666, threonine: 1.015, tryptophan: 0.185, arginine: 2.979, isoleucine: 0.971, valine: 1.35, choline: 1900.0
-  },
-  'tepung ikan': {
-    category: 'protein', energy: 2800, protein: 55.0, fat: 8.5, fiber: 1.0, pati: 0.0, moisture: 8.0, dryMatter: 92.0, ash: 22.0, calcium: 5.2, phosphorus: 3.1, phosAvailable: 3.1, sodium: 0.9, chloride: 1.2, lysine: 4.2, methionine: 1.6, metCys: 2.1, threonine: 2.2, tryptophan: 0.6, arginine: 3.4, isoleucine: 2.4, valine: 2.7, choline: 3200.0
-  },
-  'cpo': {
-    category: 'energi', energy: 8600, protein: 0.0, fat: 99.0, fiber: 0.0, pati: 0.0, moisture: 0.5, dryMatter: 99.5, ash: 0.5, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 0.0, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'minyak': {
-    category: 'energi', energy: 8600, protein: 0.0, fat: 99.0, fiber: 0.0, pati: 0.0, moisture: 0.5, dryMatter: 99.5, ash: 0.5, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 0.0, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'kapur': {
-    category: 'mineral', energy: 0.0, protein: 0.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 99.0, calcium: 38.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.1, chloride: 0.0, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'limestone': {
-    category: 'mineral', energy: 0.0, protein: 0.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 99.0, calcium: 38.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.1, chloride: 0.0, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'dcp': {
-    category: 'mineral', energy: 0.0, protein: 0.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 99.0, calcium: 24.0, phosphorus: 18.0, phosAvailable: 18.0, sodium: 0.0, chloride: 0.0, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'lisin': {
-    category: 'aditif', energy: 3728.0, protein: 94.5, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 20.0, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 19.0, lysine: 78.95, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'lysine': {
-    category: 'aditif', energy: 3728.0, protein: 94.5, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 20.0, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 19.0, lysine: 78.95, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'metionin': {
-    category: 'aditif', energy: 3652.0, protein: 58.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 0.0, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 0.0, lysine: 0.0, methionine: 98.98, metCys: 98.98, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'methionine': {
-    category: 'aditif', energy: 3652.0, protein: 58.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 0.0, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 0.0, chloride: 0.0, lysine: 0.0, methionine: 98.98, metCys: 98.98, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'garam': {
-    category: 'mineral', energy: 0.0, protein: 0.0, fat: 0.0, fiber: 0.0, pati: 0.0, moisture: 1.0, dryMatter: 99.0, ash: 99.0, calcium: 0.0, phosphorus: 0.0, phosAvailable: 0.0, sodium: 38.9, chloride: 60.1, lysine: 0.0, methionine: 0.0, metCys: 0.0, threonine: 0.0, tryptophan: 0.0, arginine: 0.0, isoleucine: 0.0, valine: 0.0, choline: 0.0
-  },
-  'maggot': {
-    category: 'protein', energy: 3100.0, protein: 42.0, fat: 28.0, fiber: 6.5, pati: 2.0, moisture: 8.0, dryMatter: 92.0, ash: 8.5, calcium: 4.8, phosphorus: 1.2, phosAvailable: 1.1, sodium: 0.15, chloride: 0.25, lysine: 2.8, methionine: 0.9, metCys: 1.3, threonine: 1.8, tryptophan: 0.5, arginine: 2.2, isoleucine: 1.7, valine: 2.1, choline: 1600.0
-  },
-  'bungkil sawit': {
-    category: 'energi', energy: 1950.0, protein: 15.5, fat: 7.2, fiber: 16.0, pati: 18.0, moisture: 9.5, dryMatter: 90.5, ash: 4.5, calcium: 0.35, phosphorus: 0.65, phosAvailable: 0.20, sodium: 0.02, chloride: 0.05, lysine: 0.45, methionine: 0.32, metCys: 0.55, threonine: 0.48, tryptophan: 0.15, arginine: 1.50, isoleucine: 0.52, valine: 0.75, choline: 1200.0
-  },
-  'bungkil kelapa': {
-    category: 'protein', energy: 2150.0, protein: 21.0, fat: 9.0, fiber: 12.0, pati: 15.0, moisture: 10.0, dryMatter: 90.0, ash: 6.5, calcium: 0.20, phosphorus: 0.58, phosAvailable: 0.18, sodium: 0.04, chloride: 0.08, lysine: 0.65, methionine: 0.35, metCys: 0.62, threonine: 0.70, tryptophan: 0.20, arginine: 2.10, isoleucine: 0.80, valine: 1.10, choline: 1450.0
-  },
-  'gaplek': {
-    category: 'energi', energy: 3100.0, protein: 2.2, fat: 0.6, fiber: 3.5, pati: 72.0, moisture: 13.0, dryMatter: 87.0, ash: 2.8, calcium: 0.18, phosphorus: 0.12, phosAvailable: 0.04, sodium: 0.02, chloride: 0.04, lysine: 0.08, methionine: 0.04, metCys: 0.08, threonine: 0.07, tryptophan: 0.02, arginine: 0.12, isoleucine: 0.08, valine: 0.10, choline: 400.0
-  },
-  'singkong': {
-    category: 'energi', energy: 3100.0, protein: 2.2, fat: 0.6, fiber: 3.5, pati: 72.0, moisture: 13.0, dryMatter: 87.0, ash: 2.8, calcium: 0.18, phosphorus: 0.12, phosAvailable: 0.04, sodium: 0.02, chloride: 0.04, lysine: 0.08, methionine: 0.04, metCys: 0.08, threonine: 0.07, tryptophan: 0.02, arginine: 0.12, isoleucine: 0.08, valine: 0.10, choline: 400.0
-  },
-  'pollard': {
-    category: 'energi', energy: 2400.0, protein: 15.0, fat: 4.0, fiber: 8.5, pati: 35.0, moisture: 12.0, dryMatter: 88.0, ash: 5.0, calcium: 0.12, phosphorus: 0.95, phosAvailable: 0.25, sodium: 0.03, chloride: 0.07, lysine: 0.58, methionine: 0.22, metCys: 0.48, threonine: 0.45, tryptophan: 0.18, arginine: 0.95, isoleucine: 0.48, valine: 0.68, choline: 1300.0
-  },
-  'gandum': {
-    category: 'energi', energy: 3120.0, protein: 12.5, fat: 2.0, fiber: 3.0, pati: 60.0, moisture: 12.5, dryMatter: 87.5, ash: 1.8, calcium: 0.06, phosphorus: 0.35, phosAvailable: 0.12, sodium: 0.02, chloride: 0.05, lysine: 0.38, methionine: 0.20, metCys: 0.45, threonine: 0.38, tryptophan: 0.15, arginine: 0.60, isoleucine: 0.42, valine: 0.55, choline: 850.0
-  }
+  'jagung': { energy: 3350, protein: 7.7, fat: 3.7, fiber: 2.3, pati: 63.89, moisture: 14, dryMatter: 86, ash: 1.3, calcium: 0.02, phosphorus: 0.24, phosAvailable: 0.08, sodium: 0.01, chloride: 0.06, lysine: 0.174, methionine: 0.141, metCys: 0.282, threonine: 0.206, tryptophan: 0.043, arginine: 0.315, isoleucine: 0.217, valine: 0.29, choline: 505.4 },
+  'dedak': { energy: 2650, protein: 11.2, fat: 12.3, fiber: 10, pati: 29.41, moisture: 11.2, dryMatter: 88.8, ash: 10.8, calcium: 0.46, phosphorus: 1.36, phosAvailable: 0.13, sodium: 0.01, chloride: 0.05, lysine: 0.332, methionine: 0.166, metCys: 0.324, threonine: 0.257, tryptophan: 0.091, arginine: 0.713, isoleucine: 0.282, valine: 0.41, choline: 1073.5 },
+  'sbm': { energy: 2235, protein: 45.9, fat: 1.1, fiber: 3.9, pati: 0.87, moisture: 12.3, dryMatter: 87.7, ash: 6.9, calcium: 0.27, phosphorus: 0.64, phosAvailable: 0.23, sodium: 0.02, chloride: 0.03, lysine: 2.435, methionine: 0.551, metCys: 1.102, threonine: 1.503, tryptophan: 0.521, arginine: 3.027, isoleucine: 1.834, valine: 1.87, choline: 2423.45 },
+  'mbm': { energy: 2450, protein: 49.1, fat: 7.6, fiber: 0.73, pati: 0, moisture: 5.9, dryMatter: 94.1, ash: 32, calcium: 9.82, phosphorus: 4.96, phosAvailable: 4.96, sodium: 0.6, chloride: 0.35, lysine: 1.724, methionine: 0.447, metCys: 0.666, threonine: 1.015, tryptophan: 0.185, arginine: 2.979, isoleucine: 0.971, valine: 1.35, choline: 1900 },
+  'cpo': { energy: 8600, protein: 0, fat: 99, fiber: 0, pati: 0, moisture: 0.5, dryMatter: 99.5, ash: 0.5, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'limestone': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 99, calcium: 38, phosphorus: 0, phosAvailable: 0, sodium: 0.1, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'dcp': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 99, calcium: 24, phosphorus: 18, phosAvailable: 18, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'l-lysine': { energy: 3728, protein: 94.5, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 20, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 19, lysine: 78.95, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'dl-methionine': { energy: 3652, protein: 58, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 98.98, metCys: 98.98, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'l-threonine': { energy: 3375, protein: 72.5, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 97.99, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'l-tryptophan': { energy: 4027, protein: 84, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 97.9, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'l-arginine': { energy: 3074, protein: 201, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 99, isoleucine: 0, valine: 0, choline: 0 },
+  'l-isoleucine': { energy: 5772, protein: 66, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 99, valine: 0, choline: 0 },
+  'l-valine': { energy: 5045, protein: 74, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 99, choline: 0 },
+  'choline-60': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 517241.38 },
+  'garam': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 1, dryMatter: 99, ash: 99, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 38.9, chloride: 60.1, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'sodium-bicarb': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 0.5, dryMatter: 99.5, ash: 27.3, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 26.8, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 },
+  'premix': { energy: 0, protein: 0, fat: 0, fiber: 0, pati: 0, moisture: 0, dryMatter: 0, ash: 0, calcium: 0, phosphorus: 0, phosAvailable: 0, sodium: 0, chloride: 0, lysine: 0, methionine: 0, metCys: 0, threonine: 0, tryptophan: 0, arginine: 0, isoleucine: 0, valine: 0, choline: 0 }
 };
-

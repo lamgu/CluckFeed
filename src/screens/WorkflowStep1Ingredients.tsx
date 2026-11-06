@@ -7,6 +7,7 @@ interface WorkflowStep1Props {
   onResetDefaults: () => void;
   onNext: () => void;
   onBack: () => void;
+  onGoHome?: () => void;
 }
 
 export const WorkflowStep1Ingredients: React.FC<WorkflowStep1Props> = ({
@@ -14,7 +15,8 @@ export const WorkflowStep1Ingredients: React.FC<WorkflowStep1Props> = ({
   onToggleIngredient,
   onResetDefaults,
   onNext,
-  onBack
+  onBack,
+  onGoHome
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryType>('semua');
@@ -247,17 +249,28 @@ export const WorkflowStep1Ingredients: React.FC<WorkflowStep1Props> = ({
       {/* Pinned Bottom Action Dock (Always Fixed at Bottom) */}
       <div className="shrink-0 w-full px-4 sm:px-6 lg:px-8 py-3 bg-white/95 backdrop-blur-md border-t border-[#e6eeff] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
-          {/* Left info */}
-          <div className="flex flex-col min-w-0 pl-1">
-            <div className="flex items-center gap-1.5">
-              <span className="font-headline-sm text-[16px] text-[#121c2a] font-bold">
-                {selectedCount} Bahan
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#006e2f]"></span>
+          {/* Left info + home */}
+          <div className="flex items-center gap-2">
+            {onGoHome && (
+              <button
+                onClick={onGoHome}
+                className="h-10 w-10 rounded-full bg-[#eff4ff] text-[#006e2f] flex items-center justify-center hover:bg-[#e6eeff] transition-colors shadow-xs border border-[#e6eeff]"
+                title="Ke Beranda"
+              >
+                <span className="material-symbols-outlined text-[20px]">home</span>
+              </button>
+            )}
+            <div className="flex flex-col min-w-0 pl-1">
+              <div className="flex items-center gap-1.5">
+                <span className="font-headline-sm text-[16px] text-[#121c2a] font-bold">
+                  {selectedCount} Bahan
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#006e2f]"></span>
+              </div>
+              <p className="font-body-sm text-[11px] text-[#3d4a3d] truncate">
+                {selectedCount >= 3 ? 'Siap dihitung rasio & harga' : 'Pilih minimal 3 bahan pakan'}
+              </p>
             </div>
-            <p className="font-body-sm text-[11px] text-[#3d4a3d] truncate">
-              {selectedCount >= 3 ? 'Siap dihitung rasio & harga' : 'Pilih minimal 3 bahan pakan'}
-            </p>
           </div>
 
           {/* Right CTA */}
