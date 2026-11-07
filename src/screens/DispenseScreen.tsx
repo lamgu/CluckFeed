@@ -88,7 +88,7 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Scrollable Middle Content Area */}
       <div className="flex-1 overflow-y-auto phone-scrollbar py-3">
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col gap-4 pb-6">
+        <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col gap-4 pb-6">
         {/* Top Context & Live Status Header */}
         <section className="pt-1 pb-1 flex flex-col gap-2.5">
           <div className="flex items-start justify-between">
@@ -330,8 +330,8 @@ export const DispenseScreen: React.FC<DispenseScreenProps> = ({
       </div>
 
       {/* Pinned Bottom Control Panel (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-[#e6eeff] z-30">
-        <div className="max-w-7xl mx-auto w-full flex items-center gap-3">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-6xl mx-auto w-full flex items-center gap-3">
           {/* Emergency Stop Button */}
           <button
             type="button"

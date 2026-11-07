@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LivestockType, AgeUnit, TargetNutrisi } from '../types';
 import {
   NutrientConstraintSpec,
@@ -35,19 +35,14 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
   onBack,
   onGoHome
 }) => {
-  const [nutrientTab, setNutrientTab] = useState<'sni' | 'custom'>('sni');
-  const [saveAsPreset, setSaveAsPreset] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
-
-  // Custom nutrient inputs
-  const [customPkMin, setCustomPkMin] = useState<number>(20.5);
-  const [customPkMax, setCustomPkMax] = useState<number>(22.5);
-  const [customEmMin, setCustomEmMin] = useState<number>(3050);
-  const [customEmMax, setCustomEmMax] = useState<number>(3150);
+  const [targetMode, setTargetMode] = useState<'sni' | 'custom'>('sni');
+  const [showFullComposition, setShowFullComposition] = useState(false);
 
   // Auto-detected Phase calculation according to CSV template
   const effectiveAgeDays = ageUnit === 'minggu' ? ageValue * 7 : ageValue;
-  const currentSpek = React.useMemo(() => {
+
+  const currentSpek = useMemo(() => {
     if (livestock === 'broiler') {
       if (effectiveAgeDays <= 12) {
         return {
@@ -58,11 +53,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           ap: '0.58%',
           lysine: '1.26%',
           met: '0.48%',
-          pati: '37.0%',
-          pkMin: 21.0,
-          pkMax: 22.5,
-          emMin: 2900,
-          emMax: 3000
+          fat: '3.0%',
+          fiber: '4.5%',
         };
       }
       if (effectiveAgeDays <= 28) {
@@ -74,11 +66,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           ap: '0.50%',
           lysine: '1.16%',
           met: '0.47%',
-          pati: '36.0%',
-          pkMin: 19.0,
-          pkMax: 20.5,
-          emMin: 2950,
-          emMax: 3050
+          fat: '3.0%',
+          fiber: '5.0%',
         };
       }
       return {
@@ -89,11 +78,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
         ap: '0.37%',
         lysine: '1.06%',
         met: '0.44%',
-        pati: '36.0%',
-        pkMin: 18.0,
-        pkMax: 19.5,
-        emMin: 3050,
-        emMax: 3150
+        fat: '3.0%',
+        fiber: '5.0%',
       };
     } else {
       if (effectiveAgeDays <= 35) {
@@ -105,11 +91,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           ap: '0.44%',
           lysine: '1.03%',
           met: '0.56%',
-          pati: '37.0%',
-          pkMin: 20.5,
-          pkMax: 22.0,
-          emMin: 2950,
-          emMax: 3050
+          fat: '3.0%',
+          fiber: '6.0%',
         };
       }
       if (effectiveAgeDays <= 70) {
@@ -121,11 +104,8 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           ap: '0.39%',
           lysine: '0.87%',
           met: '0.45%',
-          pati: '36.0%',
-          pkMin: 19.0,
-          pkMax: 20.5,
-          emMin: 2850,
-          emMax: 2950
+          fat: '3.0%',
+          fiber: '6.5%',
         };
       }
       if (effectiveAgeDays <= 105) {
@@ -137,43 +117,34 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           ap: '0.38%',
           lysine: '0.67%',
           met: '0.36%',
-          pati: '36.0%',
-          pkMin: 16.4,
-          pkMax: 17.5,
-          emMin: 2700,
-          emMax: 2800
+          fat: '3.0%',
+          fiber: '7.0%',
         };
       }
       if (effectiveAgeDays <= 126) {
         return {
-          phase: 'Pre-Layer (16–18 Minggu)',
+          phase: 'Layer Pre-Layer (16–18 Minggu)',
           pk: '16.8%',
           em: '2.700 kkal',
           ca: '2.20 - 2.50%',
           ap: '0.38%',
           lysine: '0.73%',
           met: '0.39%',
-          pati: '36.0%',
-          pkMin: 16.8,
-          pkMax: 18.0,
-          emMin: 2700,
-          emMax: 2800
+          fat: '3.0%',
+          fiber: '7.0%',
         };
       }
       if (effectiveAgeDays <= 315) {
         return {
-          phase: 'Layer-1 / Peak (18–45 Minggu)',
+          phase: 'Layer-1 (18–45 Minggu)',
           pk: '17.5%',
           em: '2.700–2.800 kkal',
           ca: '3.80%',
-          ap: '0.35%',
-          lysine: '0.78%',
-          met: '0.39%',
-          pati: '35.0%',
-          pkMin: 17.5,
-          pkMax: 18.5,
-          emMin: 2700,
-          emMax: 2800
+          ap: '0.40%',
+          lysine: '0.83%',
+          met: '0.40%',
+          fat: '3.0%',
+          fiber: '7.0%',
         };
       }
       if (effectiveAgeDays <= 560) {
@@ -182,14 +153,11 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
           pk: '17.0%',
           em: '2.700–2.800 kkal',
           ca: '3.90%',
-          ap: '0.34%',
-          lysine: '0.76%',
+          ap: '0.38%',
+          lysine: '0.80%',
           met: '0.38%',
-          pati: '35.0%',
-          pkMin: 17.0,
-          pkMax: 18.0,
-          emMin: 2700,
-          emMax: 2800
+          fat: '3.0%',
+          fiber: '7.0%',
         };
       }
       return {
@@ -197,34 +165,30 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
         pk: '16.0%',
         em: '2.700–2.800 kkal',
         ca: '4.00%',
-        ap: '0.32%',
-        lysine: '0.74%',
-        met: '0.37%',
-        pati: '35.0%',
-        pkMin: 16.0,
-        pkMax: 17.5,
-        emMin: 2700,
-        emMax: 2800
+        ap: '0.36%',
+        lysine: '0.75%',
+        met: '0.36%',
+        fat: '3.0%',
+        fiber: '7.0%',
       };
     }
   }, [livestock, effectiveAgeDays]);
 
   const detectedPhase = currentSpek.phase;
 
+  // Active nutrient constraint specifications for Simplex LP solver
   const [nutrientConstraints, setNutrientConstraints] = useState<NutrientConstraintSpec[]>(() => {
-    const key = getPresetKey(livestock, currentSpek.phase);
+    const key = getPresetKey(livestock, detectedPhase);
     const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
     return buildConstraintsFromPreset(p);
   });
 
-  // Auto-sync nutrient constraints when phase changes in SNI mode
+  // Keep constraints synchronized whenever livestock or age phase changes
   useEffect(() => {
-    if (nutrientTab === 'sni') {
-      const key = getPresetKey(livestock, detectedPhase);
-      const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
-      setNutrientConstraints(buildConstraintsFromPreset(p));
-    }
-  }, [livestock, detectedPhase, nutrientTab]);
+    const key = getPresetKey(livestock, detectedPhase);
+    const p = PHASE_PRESETS[key] ?? PHASE_PRESETS['broiler-grower'];
+    setNutrientConstraints(buildConstraintsFromPreset(p));
+  }, [livestock, detectedPhase]);
 
   const updateConstraint = (id: string, partial: Partial<NutrientConstraintSpec>) => {
     setNutrientConstraints(prev =>
@@ -242,596 +206,580 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
     setIsCalculating(true);
     setTimeout(() => {
       setIsCalculating(false);
-      if (nutrientTab === 'custom') {
-        onCalculate(undefined, nutrientConstraints);
-      } else {
-        onCalculate({
-          pkMin: currentSpek.pkMin,
-          pkMax: currentSpek.pkMax,
-          emMin: currentSpek.emMin,
-          emMax: currentSpek.emMax
-        }, nutrientConstraints);
-      }
-    }, 700);
+      onCalculate(undefined, nutrientConstraints);
+    }, 600);
+  };
+
+  // Preset batch helper
+  const handleBatchStep = (delta: number) => {
+    setBatchKg(Math.max(50, batchKg + delta));
   };
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
-      {/* Step Progress Sub-header (Shrink-0) */}
+    <div className="flex flex-col w-full h-full overflow-hidden bg-[#f9fafb]">
+      {/* Workflow Stepper Header (Sesuai Gambar 2) */}
       <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-3 bg-white border-b border-[#e6eeff] shadow-xs">
-        <div className="max-w-7xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-label-sm text-[11px] text-[#006e2f] font-bold uppercase tracking-wider">
-              Langkah 3 dari 3
+            <span className="font-label-sm text-[11px] uppercase tracking-wider text-[#006e2f] font-bold">
+              Tahap 3 dari 3
             </span>
             <span className="font-label-sm text-[12px] text-[#3d4a3d] font-semibold">
               Target Kebutuhan
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-1.5 w-full">
-            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
-            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
-            <div className="h-1.5 rounded-full bg-[#22c55e]"></div>
+
+          {/* Stepper Progress Bar (Semua 3 Hijau Penuh) */}
+          <div className="w-full flex items-center gap-1.5 h-1.5">
+            <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
+            <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
+            <div className="flex-1 h-full rounded-full bg-[#22c55e] transition-all"></div>
           </div>
         </div>
       </div>
 
-      {/* Scrollable Middle Content Area */}
+      {/* Main Content Area (Layout 2 Kolom Persis Gambar 2) */}
       <div className="flex-1 overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-6">
-          {/* Left Column: Livestock, Age, Batch Size */}
-          <div className="lg:col-span-6 flex flex-col gap-5">
-            {/* Section 1: Livestock Selection */}
-            <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <label className="font-headline-sm text-[15px] text-[#121c2a] font-bold">
-              Jenis Ternak
-            </label>
-            <span className="font-label-sm text-[11px] text-[#006e2f] font-semibold flex items-center gap-0.5">
-              <span className="material-symbols-outlined text-[14px]">info</span> Standar Berbeda
-            </span>
-          </div>
+        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-5 items-start pb-6">
+          {/* Kolom Kiri: Jenis Ternak, Umur, Target Batch (lg:col-span-5) */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            {/* Card Jenis Ternak */}
+            <div className="bg-white p-4 rounded-[20px] border border-[#e5e7eb] shadow-xs flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="font-headline-sm text-[14px] font-bold text-[#121c2a]">
+                  Jenis Ternak
+                </span>
+                <span className="text-[11px] text-[#006e2f] font-semibold flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">info</span>
+                  <span>Standar Berbeda</span>
+                </span>
+              </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-1">
-            {/* Active Broiler Card */}
-            <button
-              type="button"
-              onClick={() => setLivestock('broiler')}
-              className={`relative flex flex-col items-center text-center p-4 transition-all rounded-[20px] border shadow-xs ${
-                livestock === 'broiler'
-                  ? 'bg-[#7cf994]/25 border-[#22c55e]'
-                  : 'bg-white border-[#e5e7eb] hover:border-slate-300'
-              }`}
-            >
-              {livestock === 'broiler' && (
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#006e2f] flex items-center justify-center text-white shadow-xs">
-                  <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Broiler Card */}
+                <button
+                  type="button"
+                  onClick={() => setLivestock('broiler')}
+                  className={`p-3.5 rounded-[18px] border text-left flex flex-col justify-between relative transition-all cursor-pointer ${
+                    livestock === 'broiler'
+                      ? 'bg-[#7cf994]/20 border-[#22c55e] shadow-xs'
+                      : 'bg-white border-[#e5e7eb] hover:bg-slate-50'
+                  }`}
+                >
+                  {livestock === 'broiler' && (
+                    <span className="absolute top-2.5 right-2.5 material-symbols-outlined text-[#006e2f] text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      check_circle
+                    </span>
+                  )}
+                  <div className="w-10 h-10 rounded-[12px] bg-[#7cf994]/40 text-[#007230] flex items-center justify-center mb-2">
+                    <span className="material-symbols-outlined text-[22px]">pets</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[14px] text-[#121c2a] block">
+                      Broiler
+                    </span>
+                    <span className="text-[11px] text-[#6d7b6c] block">
+                      Ayam Pedaging
+                    </span>
+                  </div>
+                  <span className="mt-2 inline-block px-2 py-0.5 rounded-full bg-white/80 border border-slate-200 text-[10px] text-slate-600 font-semibold self-start">
+                    Cepat Tumbuh
+                  </span>
+                </button>
+
+                {/* Layer Card */}
+                <button
+                  type="button"
+                  onClick={() => setLivestock('layer')}
+                  className={`p-3.5 rounded-[18px] border text-left flex flex-col justify-between relative transition-all cursor-pointer ${
+                    livestock === 'layer'
+                      ? 'bg-[#7cf994]/20 border-[#22c55e] shadow-xs'
+                      : 'bg-white border-[#e5e7eb] hover:bg-slate-50'
+                  }`}
+                >
+                  {livestock === 'layer' && (
+                    <span className="absolute top-2.5 right-2.5 material-symbols-outlined text-[#006e2f] text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      check_circle
+                    </span>
+                  )}
+                  <div className="w-10 h-10 rounded-[12px] bg-amber-100 text-amber-800 flex items-center justify-center mb-2">
+                    <span className="material-symbols-outlined text-[22px]">egg</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[14px] text-[#121c2a] block">
+                      Layer
+                    </span>
+                    <span className="text-[11px] text-[#6d7b6c] block">
+                      Ayam Petelur
+                    </span>
+                  </div>
+                  <span className="mt-2 inline-block px-2 py-0.5 rounded-full bg-white/80 border border-slate-200 text-[10px] text-slate-600 font-semibold self-start">
+                    Fokus Telur
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Card Umur Ternak Saat Ini */}
+            <div className="bg-white p-4 rounded-[20px] border border-[#e5e7eb] shadow-xs flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="font-headline-sm text-[14px] font-bold text-[#121c2a]">
+                  Umur Ternak Saat Ini
+                </span>
+                <span className="text-[11px] text-[#6d7b6c] font-semibold">
+                  {ageUnit === 'hari' ? `Hari ke-${ageValue}` : `Minggu ke-${ageValue}`}
+                </span>
+              </div>
+
+              {/* Age Value & Unit Toggle */}
+              <div className="grid grid-cols-2 gap-3 items-center">
+                <div className="bg-[#eff4ff] rounded-[14px] px-3.5 h-12 border border-[#e6eeff] flex items-center justify-between">
+                  <input
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={ageValue}
+                    onChange={(e) => setAgeValue(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-full bg-transparent font-metric-display text-[22px] font-bold text-[#121c2a] focus:outline-none"
+                  />
+                  <span className="text-[12px] text-[#6d7b6c] font-medium ml-1">
+                    {ageUnit === 'hari' ? 'Hari' : 'Mgg'}
+                  </span>
                 </div>
-              )}
-              <div
-                className={`w-12 h-12 flex items-center justify-center mb-2 rounded-[14px] ${
-                  livestock === 'broiler' ? 'bg-[#7cf994]/50 text-[#006e2f]' : 'bg-[#eff4ff] text-[#6d7b6c]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  pest_control_rodent
-                </span>
-              </div>
-              <span className="font-title-md text-[15px] text-[#121c2a] font-bold leading-tight">
-                Broiler
-              </span>
-              <span className="font-body-sm text-[11px] text-[#3d4a3d] mt-0.5">
-                Ayam Pedaging
-              </span>
-              <span className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-md bg-white text-[#006e2f] font-label-sm text-[10px] font-bold border border-[#7cf994]">
-                Cepat Tumbuh
-              </span>
-            </button>
 
-            {/* Layer Card */}
-            <button
-              type="button"
-              onClick={() => setLivestock('layer')}
-              className={`relative flex flex-col items-center text-center p-4 transition-all rounded-[20px] border shadow-xs ${
-                livestock === 'layer'
-                  ? 'bg-[#7cf994]/25 border-[#22c55e]'
-                  : 'bg-white border-[#e5e7eb] hover:border-slate-300'
-              }`}
-            >
-              {livestock === 'layer' && (
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#006e2f] flex items-center justify-center text-white shadow-xs">
-                  <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                {/* Switch Tab: Hari vs Minggu */}
+                <div className="bg-[#eff4ff] p-1 rounded-[14px] border border-[#e6eeff] flex items-center h-12">
+                  <button
+                    type="button"
+                    onClick={() => setAgeUnit('hari')}
+                    className={`flex-1 h-full rounded-[10px] text-[12px] font-bold transition-all cursor-pointer ${
+                      ageUnit === 'hari'
+                        ? 'bg-white text-[#006e2f] shadow-2xs'
+                        : 'text-slate-600 hover:text-[#121c2a]'
+                    }`}
+                  >
+                    Hari
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAgeUnit('minggu')}
+                    className={`flex-1 h-full rounded-[10px] text-[12px] font-bold transition-all cursor-pointer ${
+                      ageUnit === 'minggu'
+                        ? 'bg-white text-[#006e2f] shadow-2xs'
+                        : 'text-slate-600 hover:text-[#121c2a]'
+                    }`}
+                  >
+                    Minggu
+                  </button>
                 </div>
-              )}
-              <div
-                className={`w-12 h-12 flex items-center justify-center mb-2 rounded-[14px] ${
-                  livestock === 'layer' ? 'bg-[#7cf994]/50 text-[#006e2f]' : 'bg-[#eff4ff] text-[#6d7b6c]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[28px]">egg</span>
               </div>
-              <span className="font-title-md text-[15px] text-[#121c2a] font-bold leading-tight">
-                Layer
-              </span>
-              <span className="font-body-sm text-[11px] text-[#3d4a3d] mt-0.5">
-                Ayam Petelur
-              </span>
-              <span className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#eff4ff] text-[#3d4a3d] font-label-sm text-[10px] font-medium border border-[#e6eeff]">
-                Fokus Telur
-              </span>
-            </button>
-          </div>
-        </div>
 
-        {/* Section 2: Umur & Fase Ternak */}
-        <div className="flex flex-col gap-2.5 bg-white p-4 shadow-xs border border-[#e5e7eb] rounded-[20px]">
-          <div className="flex items-center justify-between">
-            <label className="font-title-md text-[14px] text-[#121c2a] font-bold">
-              Umur Ternak Saat Ini
-            </label>
-            <span className="font-body-sm text-[12px] text-[#6d7b6c] font-medium">
-              {ageUnit === 'hari' ? `Hari ke-${ageValue}` : `Minggu ke-${ageValue}`}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5 items-stretch">
-            {/* Numeric Age Field */}
-            <div className="h-12 bg-[#eff4ff] px-3.5 flex items-center justify-between rounded-[14px] border border-[#e6eeff]">
-              <input
-                type="number"
-                min="1"
-                max={ageUnit === 'hari' ? 90 : 80}
-                value={ageValue}
-                onChange={(e) => setAgeValue(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full bg-transparent font-metric-display text-[20px] font-bold text-[#121c2a] focus:outline-none tracking-tight"
-              />
-              <span className="font-label-lg text-[13px] text-[#6d7b6c] font-medium shrink-0 ml-1">
-                {ageUnit === 'hari' ? 'Hari' : 'Minggu'}
-              </span>
-            </div>
-
-            {/* Segmented Unit Toggle */}
-            <div className="h-12 bg-[#eff4ff] p-1 rounded-[14px] flex items-center border border-[#e6eeff]">
-              <button
-                type="button"
-                onClick={() => setAgeUnit('hari')}
-                className={`flex-1 h-full rounded-[10px] font-label-md text-[12px] transition-all flex items-center justify-center ${
-                  ageUnit === 'hari'
-                    ? 'bg-white font-bold text-[#121c2a] shadow-xs'
-                    : 'text-[#6d7b6c] font-medium hover:text-[#121c2a]'
-                }`}
-              >
-                Hari
-              </button>
-              <button
-                type="button"
-                onClick={() => setAgeUnit('minggu')}
-                className={`flex-1 h-full rounded-[10px] font-label-md text-[12px] transition-all flex items-center justify-center ${
-                  ageUnit === 'minggu'
-                    ? 'bg-white font-bold text-[#121c2a] shadow-xs'
-                    : 'text-[#6d7b6c] font-medium hover:text-[#121c2a]'
-                }`}
-              >
-                Minggu
-              </button>
-            </div>
-          </div>
-
-          {/* Auto-detected Phase Notification Chip */}
-          <div className="mt-1 p-3 bg-[#7cf994]/30 flex items-center justify-between gap-2 rounded-[14px] border border-[#7cf994]/50">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-[#006e2f]/15 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[16px] text-[#006e2f]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  auto_awesome
-                </span>
-              </div>
-              <div className="min-w-0">
-                <p className="font-label-sm text-[10px] text-[#006e2f] font-bold uppercase tracking-wider leading-none">
-                  Rekomendasi Otomatis
-                </p>
-                <p className="font-label-md text-[13px] text-[#121c2a] font-bold truncate mt-0.5">
-                  {detectedPhase}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              title="Ubah Fase Manual"
-              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#6d7b6c] hover:text-[#006e2f] transition-colors shrink-0 shadow-xs border border-slate-200"
-            >
-              <span className="material-symbols-outlined text-[17px]">edit</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Section 3: Target Jumlah Produksi (Batch) */}
-        <div className="flex flex-col bg-white p-4 shadow-xs border border-[#e5e7eb] rounded-[20px]">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex flex-col">
-              <span className="font-title-md text-[14px] text-[#121c2a] font-bold">
-                Target Batch Dibuat
-              </span>
-              <span className="font-body-sm text-[11px] text-[#6d7b6c]">
-                Kapasitas mixer / sekali aduk
-              </span>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-[#eff4ff] text-[#121c2a] font-label-sm text-[11px] font-semibold border border-[#e6eeff]">
-              {(batchKg / 50).toFixed(0)} Sak (50kg)
-            </span>
-          </div>
-
-          {/* Stepper Controls */}
-          <div className="flex items-center justify-between bg-[#eff4ff] p-2.5 rounded-[16px] border border-[#e6eeff]">
-            <button
-              type="button"
-              aria-label="Kurangi pakan"
-              onClick={() => setBatchKg(Math.max(50, batchKg - 50))}
-              className="w-12 h-12 rounded-full bg-[#7cf994]/40 hover:bg-[#7cf994]/60 active:scale-95 text-[#007230] flex items-center justify-center transition-all shadow-xs"
-            >
-              <span className="material-symbols-outlined text-[24px] font-bold">remove</span>
-            </button>
-
-            <div className="flex flex-col items-center">
-              <div className="flex items-baseline gap-1">
-                <span className="font-headline-lg-mobile text-[26px] font-bold text-[#006e2f] tracking-tight">
-                  {batchKg.toLocaleString('id-ID')}
-                </span>
-                <span className="font-title-md text-[16px] text-[#6d7b6c] font-semibold">
-                  kg
-                </span>
-              </div>
-              <span className="font-label-sm text-[11px] text-[#6d7b6c] mt-0.5">
-                ± {(batchKg / 1000).toFixed(2)} Ton Pakan Siap Pakai
-              </span>
-            </div>
-
-            <button
-              type="button"
-              aria-label="Tambah pakan"
-              onClick={() => setBatchKg(batchKg + 50)}
-              className="w-12 h-12 rounded-full bg-[#7cf994]/40 hover:bg-[#7cf994]/60 active:scale-95 text-[#007230] flex items-center justify-center transition-all shadow-xs"
-            >
-              <span className="material-symbols-outlined text-[24px] font-bold">add</span>
-            </button>
-          </div>
-
-          {/* Quick presets */}
-          <div className="flex items-center justify-between gap-2 mt-3">
-            {[100, 250, 500, 1000].map((kg) => (
-              <button
-                key={kg}
-                type="button"
-                onClick={() => setBatchKg(kg)}
-                className={`flex-1 py-1.5 rounded-lg font-label-sm text-[11px] transition-all border ${
-                  batchKg === kg
-                    ? 'bg-[#006e2f]/10 text-[#006e2f] font-bold border-[#22c55e]'
-                    : 'bg-[#eff4ff] text-[#3d4a3d] font-medium border-[#e6eeff] hover:bg-[#e6eeff]'
-                }`}
-              >
-                {kg.toLocaleString('id-ID')} kg
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Column: Nutrient Targets (SNI or Custom) */}
-      <div className="lg:col-span-6 flex flex-col gap-5">
-        {/* Section 4: Target Nutrisi (Standar vs Custom) */}
-        <div className="flex flex-col gap-3">
-          {/* Segmented Tab Header */}
-          <div className="flex items-center justify-between">
-            <label className="font-headline-sm text-[15px] text-[#121c2a] font-bold">
-              Target Kualitas Nutrisi
-            </label>
-            <div className="flex bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff]">
-              <button
-                type="button"
-                onClick={() => setNutrientTab('sni')}
-                className={`px-3.5 py-1 rounded-full font-label-md text-[12px] transition-all ${
-                  nutrientTab === 'sni'
-                    ? 'bg-white font-bold text-[#121c2a] shadow-xs'
-                    : 'text-[#6d7b6c] font-medium'
-                }`}
-              >
-                Standar SNI
-              </button>
-              <button
-                type="button"
-                onClick={() => setNutrientTab('custom')}
-                className={`px-3.5 py-1 rounded-full font-label-md text-[12px] transition-all ${
-                  nutrientTab === 'custom'
-                    ? 'bg-white font-bold text-[#121c2a] shadow-xs'
-                    : 'text-[#6d7b6c] font-medium'
-                }`}
-              >
-                Custom
-              </button>
-            </div>
-          </div>
-
-          {/* SNI Panel */}
-          {nutrientTab === 'sni' && (
-            <div className="flex flex-col bg-white p-4 shadow-xs border border-[#e5e7eb] rounded-[20px]">
-              <label className="font-label-sm text-[11px] text-[#6d7b6c] font-medium mb-1.5">
-                Acuan Rujukan Formulir:
-              </label>
-              {/* Acuan Rujukan Selector Banner */}
-              <div className="flex items-center justify-between p-3 bg-[#eff4ff] rounded-[12px] border border-[#e6eeff]">
+              {/* Banner Rekomendasi Otomatis */}
+              <div className="bg-[#7cf994]/20 rounded-[14px] p-3 border border-emerald-200 flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[20px] text-[#006e2f]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    verified
+                  <span className="material-symbols-outlined text-[#006e2f] text-[20px] shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    auto_awesome
                   </span>
-                  <span className="font-label-md text-[12px] text-[#121c2a] font-semibold truncate">
-                    Template Spek CSV • {currentSpek.phase}
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-label-sm text-[9px] uppercase tracking-wider text-[#007230] font-bold">
+                      Rekomendasi Otomatis
+                    </span>
+                    <span className="font-bold text-[12px] text-[#121c2a] truncate">
+                      {detectedPhase}
+                    </span>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-[#006e2f] text-[18px]">
+                  edit
+                </span>
+              </div>
+            </div>
+
+            {/* Card Target Batch Dibuat */}
+            <div className="bg-white p-4 rounded-[20px] border border-[#e5e7eb] shadow-xs flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-headline-sm text-[14px] font-bold text-[#121c2a] block">
+                    Target Batch Dibuat
+                  </span>
+                  <span className="text-[11px] text-[#6d7b6c]">
+                    Kapasitas mixer / sekali aduk
                   </span>
                 </div>
-                <span className="text-[10px] bg-white px-2 py-0.5 rounded-full text-[#006e2f] font-bold border border-[#e6eeff]">
+                <span className="text-[11px] text-[#006e2f] font-bold bg-[#eff4ff] px-2.5 py-1 rounded-full border border-[#e6eeff]">
+                  {Math.round(batchKg / 50)} Sak (50kg)
+                </span>
+              </div>
+
+              {/* Stepper Kontrol Besar: Minus, Teks, Plus */}
+              <div className="bg-[#eff4ff] rounded-[18px] p-3 border border-[#e6eeff] flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => handleBatchStep(-50)}
+                  className="w-12 h-12 rounded-full bg-white hover:bg-[#e6eeff] text-[#006e2f] font-bold text-[22px] flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[24px]">remove</span>
+                </button>
+
+                <div className="flex flex-col items-center">
+                  <span className="font-metric-display text-[26px] font-black text-[#121c2a] leading-tight">
+                    {batchKg.toLocaleString('id-ID')} <span className="text-[16px] font-bold text-[#006e2f]">kg</span>
+                  </span>
+                  <span className="text-[10px] text-[#6d7b6c] font-medium">
+                    ± {(batchKg / 1000).toFixed(2)} Ton Pakan Siap Pakai
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleBatchStep(50)}
+                  className="w-12 h-12 rounded-full bg-[#22c55e] hover:bg-[#006e2f] text-white font-bold text-[22px] flex items-center justify-center transition-all shadow-md cursor-pointer active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[24px]">add</span>
+                </button>
+              </div>
+
+              {/* Quick Batch Presets */}
+              <div className="grid grid-cols-4 gap-2">
+                {[100, 250, 500, 1000].map(kg => (
+                  <button
+                    key={kg}
+                    type="button"
+                    onClick={() => setBatchKg(kg)}
+                    className={`py-2 rounded-[12px] text-[12px] font-bold transition-all cursor-pointer border ${
+                      batchKg === kg
+                        ? 'bg-[#006e2f] text-white border-[#006e2f] shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-[#eff4ff]'
+                    }`}
+                  >
+                    {kg >= 1000 ? '1.000 kg' : `${kg} kg`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Kolom Kanan: Target Kualitas Nutrisi (lg:col-span-7) */}
+          <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="bg-white p-5 rounded-[20px] border border-[#e5e7eb] shadow-xs flex flex-col gap-4">
+              {/* Header Target Kualitas Nutrisi & Toggle Standar SNI vs Custom */}
+              <div className="flex items-center justify-between">
+                <span className="font-headline-sm text-[15px] font-bold text-[#121c2a]">
+                  Target Kualitas Nutrisi
+                </span>
+
+                {/* Pill Toggle Standar SNI vs Custom */}
+                <div className="flex items-center bg-[#eff4ff] p-0.5 rounded-full border border-[#e6eeff]">
+                  <button
+                    type="button"
+                    onClick={() => setTargetMode('sni')}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                      targetMode === 'sni'
+                        ? 'bg-white text-[#006e2f] shadow-2xs'
+                        : 'text-slate-500 hover:text-[#121c2a]'
+                    }`}
+                  >
+                    Standar SNI
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetMode('custom')}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                      targetMode === 'custom'
+                        ? 'bg-white text-[#006e2f] shadow-2xs'
+                        : 'text-slate-500 hover:text-[#121c2a]'
+                    }`}
+                  >
+                    Custom
+                  </button>
+                </div>
+              </div>
+
+              {/* Acuan Rujukan Formulir Banner */}
+              <div className="bg-[#eff4ff]/70 rounded-[14px] p-3 border border-[#e6eeff] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#006e2f] text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    check_circle
+                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-[#6d7b6c] uppercase tracking-wider font-semibold">
+                      Acuan Rujukan Formula
+                    </span>
+                    <span className="font-bold text-[12px] text-[#121c2a]">
+                      Template Spek CSV • {detectedPhase}
+                    </span>
+                  </div>
+                </div>
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#7cf994]/40 text-[#007230] text-[10px] font-bold border border-emerald-200">
                   Sesuai Umur
                 </span>
               </div>
 
-              {/* Nutrient Detail Cards */}
-              <div className="flex flex-col gap-2 mt-3">
-                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-[#006e2f]/10 text-[#006e2f] flex items-center justify-center shrink-0 rounded-lg">
+              {/* 5 Card Ringkasan Nutrisi Utama (Sesuai Gambar 2) */}
+              <div className="flex flex-col gap-2.5">
+                {/* 1. Protein Kasar (PK min) */}
+                <div className="bg-white rounded-[14px] p-3.5 border border-slate-200 flex items-center justify-between hover:border-emerald-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] bg-[#7cf994]/30 text-[#006e2f] flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-[20px]">fitness_center</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                    <div>
+                      <span className="font-bold text-[13px] text-[#121c2a] block">
                         Protein Kasar (PK min)
                       </span>
-                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                      <span className="text-[11px] text-[#6d7b6c]">
                         Pertumbuhan otot &amp; daging
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {currentSpek.pk}
-                    </span>
-                  </div>
+                  <span className="font-metric-display text-[16px] font-bold text-[#121c2a]">
+                    {currentSpek.pk}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-[#ef9900]/20 text-[#855300] flex items-center justify-center shrink-0 rounded-lg">
+                {/* 2. Energi Metabolis (EM) */}
+                <div className="bg-white rounded-[14px] p-3.5 border border-slate-200 flex items-center justify-between hover:border-amber-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-[20px]">bolt</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                    <div>
+                      <span className="font-bold text-[13px] text-[#121c2a] block">
                         Energi Metabolis (EM)
                       </span>
-                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                      <span className="text-[11px] text-[#6d7b6c]">
                         Aktivitas &amp; pembakaran
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {currentSpek.em}
-                    </span>
-                  </div>
+                  <span className="font-metric-display text-[16px] font-bold text-[#121c2a]">
+                    {currentSpek.em}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-[#7cf994]/40 text-[#007230] flex items-center justify-center shrink-0 rounded-lg">
-                      <span className="material-symbols-outlined text-[20px]">format_h4</span>
+                {/* 3. Kalsium (Ca min-max) */}
+                <div className="bg-white rounded-[14px] p-3.5 border border-slate-200 flex items-center justify-between hover:border-emerald-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] bg-[#7cf994]/30 text-[#007230] flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[20px]">shield</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                    <div>
+                      <span className="font-bold text-[13px] text-[#121c2a] block">
                         Kalsium (Ca min-max)
                       </span>
-                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                      <span className="text-[11px] text-[#6d7b6c]">
                         Struktur rangka &amp; cangkang
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {currentSpek.ca}
-                    </span>
-                  </div>
+                  <span className="font-metric-display text-[16px] font-bold text-[#121c2a]">
+                    {currentSpek.ca}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-[#dee9fc] text-[#3d4a3d] flex items-center justify-center shrink-0 rounded-lg">
+                {/* 4. Fosfor Tersedia (aP) */}
+                <div className="bg-white rounded-[14px] p-3.5 border border-slate-200 flex items-center justify-between hover:border-blue-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-[20px]">science</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                    <div>
+                      <span className="font-bold text-[13px] text-[#121c2a] block">
                         Fosfor Tersedia (aP)
                       </span>
-                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                      <span className="text-[11px] text-[#6d7b6c]">
                         Keseimbangan mineral tulang
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[13px] font-bold text-[#121c2a]">
-                      {currentSpek.ap}
-                    </span>
-                  </div>
+                  <span className="font-metric-display text-[16px] font-bold text-[#121c2a]">
+                    {currentSpek.ap}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-[#f8f9ff] hover:bg-[#eff4ff] transition-colors rounded-[12px] border border-[#e6eeff]">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 rounded-lg">
+                {/* 5. Lisin & Metionin */}
+                <div className="bg-white rounded-[14px] p-3.5 border border-slate-200 flex items-center justify-between hover:border-purple-300 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] bg-purple-100 text-purple-800 flex items-center justify-center shrink-0">
                       <span className="material-symbols-outlined text-[20px]">biotech</span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
+                    <div>
+                      <span className="font-bold text-[13px] text-[#121c2a] block">
                         Lisin &amp; Metionin
                       </span>
-                      <span className="font-body-sm text-[10px] text-[#6d7b6c]">
+                      <span className="text-[11px] text-[#6d7b6c]">
                         Asam amino esensial tercerna
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-1 bg-[#eff4ff] px-2.5 py-1 rounded-md border border-[#e6eeff]">
-                    <span className="font-label-lg text-[12px] font-bold text-[#121c2a]">
-                      Lys {currentSpek.lysine} • Met {currentSpek.met}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Custom Panel */}
-          {nutrientTab === 'custom' && (
-            <div className="flex flex-col bg-white p-4 rounded-[20px] shadow-xs border border-[#e5e7eb] gap-3">
-              <div className="flex items-center justify-between pb-2 border-b border-[#e6eeff]">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#ef9900] animate-pulse"></span>
-                  <span className="font-label-md text-[13px] font-bold text-[#121c2a]">
-                    Matriks 22 Batasan Nutrisi LP
+                  <span className="font-metric-display text-[14px] font-bold text-[#121c2a]">
+                    Lys {currentSpek.lysine} • Met {currentSpek.met}
                   </span>
                 </div>
+              </div>
+
+              {/* FITUR TAMBAHAN SESUAI PERMINTAAN USER: "Lihat Komposisi Target yang Lengkap" */}
+              <div className="pt-2 border-t border-slate-100 flex flex-col gap-3">
                 <button
                   type="button"
-                  onClick={resetToCurrentPhase}
-                  className="font-label-sm text-[11px] text-[#006e2f] font-bold hover:underline flex items-center gap-0.5 px-2 py-1 rounded-md bg-[#7cf994]/20"
-                >
-                  <span className="material-symbols-outlined text-[14px]">restart_alt</span>
-                  Reset ke Spek Fase
-                </button>
-              </div>
-
-              <p className="text-[11px] text-[#6d7b6c] -mt-1">
-                Centang parameter nutrisi yang ingin dijadikan batasan linear programming (Simplex LP). Kosongkan bila tidak dibatasi.
-              </p>
-
-              {/* 22 Nutrients List */}
-              <div className="flex flex-col gap-2 max-h-[380px] overflow-y-auto pr-1 phone-scrollbar">
-                {nutrientConstraints.map(nc => (
-                  <div
-                    key={nc.id}
-                    className={`p-2.5 rounded-[12px] border transition-all ${
-                      nc.enabled
-                        ? 'bg-[#eff4ff]/60 border-[#22c55e]/50'
-                        : 'bg-[#f8f9ff] border-[#e6eeff] opacity-60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
-                        <input
-                          type="checkbox"
-                          checked={nc.enabled}
-                          onChange={e => updateConstraint(nc.id, { enabled: e.target.checked })}
-                          className="w-4 h-4 rounded text-[#006e2f] focus:ring-[#22c55e]"
-                        />
-                        <span className={`text-[12px] font-bold truncate ${nc.enabled ? 'text-[#121c2a]' : 'text-slate-500'}`}>
-                          {nc.name}
-                        </span>
-                      </label>
-                      <span className="text-[10px] text-slate-500 font-mono shrink-0 px-1.5 py-0.5 bg-white rounded border border-slate-200">
-                        {nc.unit}
-                      </span>
-                    </div>
-
-                    {nc.enabled && (
-                      <div className="grid grid-cols-2 gap-2 mt-1 pl-6">
-                        <div className="flex items-center bg-white px-2 py-1 rounded-[8px] border border-slate-200">
-                          <span className="text-[10px] text-slate-400 font-medium w-9 shrink-0">Min:</span>
-                          <input
-                            type="number"
-                            step="any"
-                            placeholder="Tidak ada"
-                            value={nc.min ?? ''}
-                            onChange={e => {
-                              const val = e.target.value === '' ? null : parseFloat(e.target.value);
-                              updateConstraint(nc.id, { min: isNaN(val as any) ? null : val });
-                            }}
-                            className="w-full bg-transparent text-[12px] font-bold text-[#121c2a] focus:outline-none"
-                          />
-                        </div>
-                        <div className="flex items-center bg-white px-2 py-1 rounded-[8px] border border-slate-200">
-                          <span className="text-[10px] text-slate-400 font-medium w-9 shrink-0">Max:</span>
-                          <input
-                            type="number"
-                            step="any"
-                            placeholder="Tidak ada"
-                            value={nc.max ?? ''}
-                            onChange={e => {
-                              const val = e.target.value === '' ? null : parseFloat(e.target.value);
-                              updateConstraint(nc.id, { max: isNaN(val as any) ? null : val });
-                            }}
-                            className="w-full bg-transparent text-[12px] font-bold text-[#121c2a] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Save as preset switch */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-1">
-                <div className="flex flex-col">
-                  <span className="font-label-md text-[12px] text-[#121c2a] font-semibold">
-                    Simpan sebagai preset baru
-                  </span>
-                  <span className="font-body-sm text-[10px] text-[#6d7b6c]">
-                    Gunakan lagi untuk racikan berikutnya
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSaveAsPreset(!saveAsPreset)}
-                  className={`w-12 h-6 rounded-full relative flex items-center p-0.5 transition-colors ${
-                    saveAsPreset ? 'bg-[#006e2f]' : 'bg-[#d9e3f6]'
+                  onClick={() => setShowFullComposition(!showFullComposition)}
+                  className={`w-full py-2.5 px-4 rounded-[14px] text-[12px] font-bold flex items-center justify-between transition-all cursor-pointer ${
+                    showFullComposition
+                      ? 'bg-[#006e2f] text-white shadow-xs'
+                      : 'bg-[#eff4ff] text-[#006e2f] hover:bg-[#e6eeff]'
                   }`}
                 >
-                  <span
-                    className={`w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 ${
-                      saveAsPreset ? 'translate-x-6' : 'translate-x-0'
-                    }`}
-                  />
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">
+                      {showFullComposition ? 'tune' : 'list_alt'}
+                    </span>
+                    <span>
+                      {showFullComposition ? 'Tutup Komposisi Target' : 'Lihat Komposisi Target yang Lengkap (22 Parameter)'}
+                    </span>
+                  </div>
+                  <span className="material-symbols-outlined text-[18px]">
+                    {showFullComposition ? 'expand_less' : 'expand_more'}
+                  </span>
                 </button>
+
+                {/* Expandable 22 Parameters Detailed Targets Panel */}
+                {showFullComposition && (
+                  <div className="bg-[#f8f9ff] rounded-[16px] p-4 border border-[#e6eeff] flex flex-col gap-3 animate-fadeIn">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[12px] text-[#121c2a]">
+                          Batasan Matematika Target Nutrisi Optimasi
+                        </span>
+                        <span className="text-[10px] text-[#6d7b6c]">
+                          {targetMode === 'custom'
+                            ? 'Mode Custom aktif: Anda dapat mengubah batas Min dan Max setiap parameter di bawah.'
+                            : 'Nilai standar SNI diterapkan sebagai batasan optimasi least cost.'}
+                        </span>
+                      </div>
+                      {targetMode === 'custom' && (
+                        <button
+                          type="button"
+                          onClick={resetToCurrentPhase}
+                          className="text-[11px] font-bold text-[#006e2f] hover:underline cursor-pointer"
+                        >
+                          Reset ke Spek SNI
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-72 overflow-y-auto phone-scrollbar pr-1">
+                      {nutrientConstraints.map((nc) => {
+                        const isCustomEditable = targetMode === 'custom';
+                        return (
+                          <div
+                            key={nc.id}
+                            className="bg-white rounded-[10px] p-2.5 border border-slate-200 flex items-center justify-between gap-2 shadow-2xs"
+                          >
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold text-[11px] text-[#121c2a] truncate">
+                                {nc.name}
+                              </span>
+                              <span className="text-[9px] text-[#6d7b6c] font-mono">
+                                {nc.unit}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0 text-[11px]">
+                              {/* Min Box */}
+                              <div className="flex items-center gap-1 bg-[#eff4ff] px-2 py-1 rounded-[6px] border border-[#e6eeff]">
+                                <span className="text-[9px] text-[#6d7b6c] font-semibold">Min:</span>
+                                {isCustomEditable ? (
+                                  <input
+                                    type="number"
+                                    step={nc.unit === 'kkal/kg' ? 10 : 0.05}
+                                    value={nc.min ?? ''}
+                                    placeholder="—"
+                                    onChange={(e) => {
+                                      const val = e.target.value === '' ? null : Number(e.target.value);
+                                      updateConstraint(nc.id, { min: val });
+                                    }}
+                                    className="w-12 text-right outline-none font-bold text-[11px] bg-transparent text-[#121c2a]"
+                                  />
+                                ) : (
+                                  <span className="font-bold text-[11px] text-[#121c2a]">
+                                    {nc.min !== null ? nc.min : '—'}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Max Box */}
+                              <div className="flex items-center gap-1 bg-[#eff4ff] px-2 py-1 rounded-[6px] border border-[#e6eeff]">
+                                <span className="text-[9px] text-[#6d7b6c] font-semibold">Max:</span>
+                                {isCustomEditable ? (
+                                  <input
+                                    type="number"
+                                    step={nc.unit === 'kkal/kg' ? 10 : 0.05}
+                                    value={nc.max ?? ''}
+                                    placeholder="—"
+                                    onChange={(e) => {
+                                      const val = e.target.value === '' ? null : Number(e.target.value);
+                                      updateConstraint(nc.id, { max: val });
+                                    }}
+                                    className="w-12 text-right outline-none font-bold text-[11px] bg-transparent text-[#121c2a]"
+                                  />
+                                ) : (
+                                  <span className="font-bold text-[11px] text-[#121c2a]">
+                                    {nc.max !== null ? nc.max : '—'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </div>
-        </div>
+          </div>
         </div>
       </div>
 
-      {/* Pinned Bottom Action Bar (Always Fixed at Bottom) */}
-      <div className="shrink-0 w-full p-4 sm:px-6 lg:px-8 bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
-        <div className="max-w-7xl mx-auto w-full flex flex-col gap-2">
-          <div className="flex items-center gap-3">
+      {/* Pinned Bottom Action Bar */}
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-[#e6eeff] z-30">
+        <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-3.5">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <button
+              type="button"
               onClick={onBack}
-              className="h-12 px-4 rounded-full bg-[#eff4ff] text-[#121c2a] font-label-lg text-[13px] font-semibold flex items-center justify-center gap-1 active:bg-[#d0dbed] transition-colors shadow-xs"
+              className="h-12 sm:h-13 px-5 rounded-full bg-[#eff4ff] text-[#121c2a] text-[12px] sm:text-[13px] font-bold flex items-center justify-center gap-1.5 hover:bg-[#e6eeff] active:bg-[#d0dbed] transition-colors shadow-xs cursor-pointer"
             >
               <span className="material-symbols-outlined text-[19px]">arrow_back</span>
-              <span>Ubah</span>
+              <span>Matriks Nutrisi (2/3)</span>
             </button>
 
             {onGoHome && (
               <button
+                type="button"
                 onClick={onGoHome}
-                className="h-12 px-4 rounded-full bg-[#eff4ff] text-[#006e2f] font-label-lg text-[13px] font-semibold flex items-center justify-center gap-1 active:bg-[#d0dbed] transition-colors shadow-xs border border-[#e6eeff]"
+                className="h-12 sm:h-13 px-4 rounded-full bg-[#eff4ff] text-[#121c2a] text-[12px] sm:text-[13px] font-bold flex items-center gap-1.5 hover:bg-[#e6eeff] transition-all cursor-pointer shadow-xs"
+                title="Kembali ke Beranda"
               >
                 <span className="material-symbols-outlined text-[19px]">home</span>
                 <span className="hidden sm:inline">Beranda</span>
               </button>
             )}
+          </div>
 
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               type="button"
-              onClick={handleCalculate}
               disabled={isCalculating}
-              className="flex-1 h-12 bg-[#006e2f] hover:bg-[#004b1e] active:scale-[0.98] text-white font-label-lg text-[14px] font-bold rounded-full flex items-center justify-center gap-2 shadow-md transition-all"
+              onClick={handleCalculate}
+              className="flex-1 sm:flex-initial h-12 sm:h-13 px-8 sm:px-10 rounded-full bg-[#006e2f] hover:bg-[#005524] text-white text-[13px] sm:text-[14px] font-extrabold flex items-center justify-center gap-2.5 active:scale-95 shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               {isCalculating ? (
                 <>
-                  <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
-                  <span>Mengoptimalkan Formula...</span>
+                  <span className="material-symbols-outlined text-[20px] animate-spin">
+                    progress_activity
+                  </span>
+                  <span>Menghitung Formulasi Least Cost...</span>
                 </>
               ) : (
                 <>
@@ -839,16 +787,17 @@ export const WorkflowStep3Targets: React.FC<WorkflowStep3Props> = ({
                     auto_awesome
                   </span>
                   <span>Hitung Formula Pakan</span>
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                 </>
               )}
             </button>
           </div>
+        </div>
 
-          <p className="text-center font-label-sm text-[10px] text-[#6d7b6c] flex items-center justify-center gap-1">
-            <span className="material-symbols-outlined text-[13px] text-[#006e2f]">security</span>
-            Divalidasi algoritma Least-Cost Feed Formulation (LCF)
-          </p>
+        {/* Credibility Footnote */}
+        <div className="max-w-6xl mx-auto w-full pt-1.5 flex items-center justify-center gap-1 text-[10px] text-[#6d7b6c]">
+          <span className="material-symbols-outlined text-[13px] text-[#006e2f]">verified</span>
+          <span>Optimasi deterministik Simplex Linear Programming berbasis data bahan Tahap 2 &amp; target Tahap 3</span>
         </div>
       </div>
     </div>

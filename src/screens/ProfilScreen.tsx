@@ -17,7 +17,8 @@ export const ProfilScreen: React.FC<ProfilScreenProps> = ({
   onContactSupport
 }) => {
   return (
-    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-28 md:pb-12 gap-5 pt-3 flex flex-col overscroll-contain">
+    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-28 md:pb-12 pt-3 flex flex-col overscroll-contain">
+      <div className="max-w-6xl mx-auto w-full flex flex-col gap-5">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Left Column: Profile, IoT Device, Account */}
         <div className="lg:col-span-5 flex flex-col gap-4">
@@ -310,15 +311,16 @@ export const ProfilScreen: React.FC<ProfilScreenProps> = ({
         </div>
       </div>
 
-      {/* App Version Footer */}
-      <div className="flex flex-col items-center justify-center text-center pt-2 pb-2">
-        <div className="flex items-center gap-1.5 text-[#6d7b6c]">
-          <span className="material-symbols-outlined text-[16px] text-[#006e2f]">eco</span>
-          <span className="font-label-sm text-[11px] font-bold text-[#121c2a]">CluckFeed v1.4.0</span>
+        {/* App Version Footer */}
+        <div className="flex flex-col items-center justify-center text-center pt-2 pb-2">
+          <div className="flex items-center gap-1.5 text-[#6d7b6c]">
+            <span className="material-symbols-outlined text-[16px] text-[#006e2f]">eco</span>
+            <span className="font-label-sm text-[11px] font-bold text-[#121c2a]">CluckFeed v1.4.0</span>
+          </div>
+          <p className="font-body-sm text-[11px] text-[#6d7b6c] mt-0.5">
+            Dibuat dengan bangga untuk Peternak Indonesia
+          </p>
         </div>
-        <p className="font-body-sm text-[11px] text-[#6d7b6c] mt-0.5">
-          Dibuat dengan bangga untuk Peternak Indonesia
-        </p>
       </div>
     </div>
   );

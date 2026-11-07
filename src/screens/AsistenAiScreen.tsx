@@ -128,9 +128,9 @@ export const AsistenAiScreen: React.FC<AsistenAiScreenProps> = ({ onApplySubstit
   };
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden items-center">
+    <div className="flex flex-col w-full h-full overflow-hidden">
       {/* Assistant Identity Banner (Shrink-0) */}
-      <div className="shrink-0 w-full max-w-4xl px-4 mt-2 mb-2">
+      <div className="shrink-0 w-full max-w-4xl mx-auto px-4 mt-2 mb-2">
         <div className="p-3 rounded-[20px] bg-white shadow-xs border border-[#e5e7eb] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative w-11 h-11 rounded-full bg-[#7cf994]/40 flex items-center justify-center shrink-0">
@@ -169,7 +169,7 @@ export const AsistenAiScreen: React.FC<AsistenAiScreenProps> = ({ onApplySubstit
 
       {/* Offline Warning Banner */}
       {!isOnline && (
-        <div className="shrink-0 w-full max-w-4xl px-4 mb-2">
+        <div className="shrink-0 w-full max-w-4xl mx-auto px-4 mb-2">
           <div className="px-3.5 py-2 rounded-[16px] bg-[#ffddb8] text-[#2a1700] flex items-center gap-2.5 shadow-xs border border-amber-300">
             <span className="material-symbols-outlined text-[18px] text-[#855300]">wifi_off</span>
             <span className="font-body-sm text-[11px] flex-1 leading-snug font-medium">
@@ -180,7 +180,7 @@ export const AsistenAiScreen: React.FC<AsistenAiScreenProps> = ({ onApplySubstit
       )}
 
       {/* Chat Stream Container (Scrollable Middle) */}
-      <div className="flex-1 overflow-y-auto phone-scrollbar px-4 pt-2 pb-8 flex flex-col gap-3.5 min-h-0 w-full max-w-4xl">
+      <div className="flex-1 overflow-y-auto phone-scrollbar px-4 pt-2 pb-8 flex flex-col gap-3.5 min-h-0 w-full max-w-4xl mx-auto">
         {messages.map((msg) => {
           const isBot = msg.sender === 'assistant';
           return (

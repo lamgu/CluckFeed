@@ -68,8 +68,29 @@ export const BerandaScreen: React.FC<BerandaScreenProps> = ({
   const farmName = farmConfig?.farm_name || 'Peternakan Berkah Sejahtera';
   const iotStatus = farmConfig?.iot_status || 'terhubung';
 
+  // Formula yang sudah di-save pengguna (hanya nama dan tanggal kecil, tanpa angka ribet)
+  const savedFormulasList = React.useMemo(() => {
+    if (history && history.length > 0) {
+      return history.map(h => ({
+        id: h.id,
+        title: h.title,
+        date: h.timeStr || 'Tersimpan',
+        icon: h.icon || 'grain',
+        action: () => onViewLastFormula ? onViewLastFormula(h) : (onRepeatFormula ? onRepeatFormula(h) : undefined)
+      }));
+    }
+    return presetsList.slice(0, 4).map((p, idx) => ({
+      id: p.id,
+      title: p.title,
+      date: `Disimpan ${7 - idx} Nov 2026`,
+      icon: p.icon || 'grain',
+      action: () => onSelectPreset ? onSelectPreset(p) : onOpenTargets()
+    }));
+  }, [history, presetsList, onViewLastFormula, onRepeatFormula, onSelectPreset, onOpenTargets]);
+
   return (
-    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-24 md:pb-12 gap-6 pt-3 flex flex-col overscroll-contain">
+    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-24 md:pb-12 pt-3 flex flex-col overscroll-contain">
+      <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
       {/* 1. Top Greeting & IoT Hardware Status */}
       <section className="shrink-0 flex items-center justify-between pt-1">
         <div className="flex flex-col">
@@ -454,83 +475,46 @@ export const BerandaScreen: React.FC<BerandaScreenProps> = ({
             </div>
           </section>
 
-          {/* 6. Preset Formula Tersimpan Section (Replacement as requested) */}
+          {/* 6. Formula Tersimpan (Preset) - Bersih: hanya nama & tanggal dibuat, tanpa angka ribet */}
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-0.5">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[#006e2f] text-[20px]">bookmarks</span>
-                <h3 className="font-headline-sm text-[16px] text-[#121c2a] font-bold">Preset Formula</h3>
+                <h3 className="font-headline-sm text-[16px] text-[#121c2a] font-bold">Preset Formula Tersimpan</h3>
               </div>
               <button
                 type="button"
                 onClick={onOpenTargets}
-                className="font-label-sm text-[12px] text-[#006e2f] font-bold hover:underline"
+                className="font-label-sm text-[12px] text-[#006e2f] font-bold hover:underline cursor-pointer"
               >
-                Lihat Semua ({presetsList.length})
+                Lihat Semua ({savedFormulasList.length})
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {presetsList.slice(0, 4).map((preset) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              {savedFormulasList.map((formula) => (
                 <div
-                  key={preset.id}
-                  className="rounded-[22px] bg-white p-3.5 sm:p-4 flex flex-col justify-between gap-3 shadow-xs border border-[#e5e7eb] hover:border-[#22c55e] transition-all"
+                  key={formula.id}
+                  onClick={formula.action}
+                  className="rounded-[18px] bg-white p-3 sm:p-3.5 flex items-center justify-between gap-2.5 shadow-xs border border-[#e5e7eb] hover:border-[#22c55e] hover:shadow-sm transition-all cursor-pointer group"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        className={`w-10 h-10 rounded-[14px] flex items-center justify-center shrink-0 ${
-                          preset.category === 'custom' ? 'bg-[#ffddb8] text-[#855300]' : 'bg-[#7cf994]/30 text-[#006e2f]'
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[22px]">{preset.icon}</span>
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-title-md text-[13px] font-bold text-[#121c2a] truncate">
-                          {preset.title}
-                        </h4>
-                        <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-                          <span className="bg-[#eff4ff] text-[#3d4a3d] font-label-sm text-[10px] px-1.5 py-0.2 rounded-full">
-                            {preset.phase}
-                          </span>
-                          <span
-                            className={`font-label-sm text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                              preset.category === 'custom'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-[#7cf994]/50 text-[#007230]'
-                            }`}
-                          >
-                            {preset.standardBadge}
-                          </span>
-                        </div>
-                      </div>
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div className="w-9 h-9 rounded-[12px] bg-[#7cf994]/30 text-[#006e2f] flex items-center justify-center shrink-0 group-hover:bg-[#006e2f] group-hover:text-white transition-colors">
+                      <span className="material-symbols-outlined text-[20px]">{formula.icon}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-[13px] font-bold text-[#121c2a] truncate group-hover:text-[#006e2f] transition-colors leading-snug" title={formula.title}>
+                        {formula.title}
+                      </h4>
+                      <p className="text-[10px] text-[#6d7b6c] truncate leading-tight mt-0.5">
+                        {formula.date}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Nutrisi Matrix Mini */}
-                  <div className="grid grid-cols-3 gap-1 bg-[#eff4ff] p-2 rounded-[12px] border border-[#e6eeff] text-center">
-                    <div>
-                      <span className="font-label-sm text-[9px] text-[#6d7b6c] block">PK</span>
-                      <span className="font-label-lg text-[11px] font-bold text-[#121c2a]">{preset.pk}</span>
-                    </div>
-                    <div className="border-x border-[#d9e3f6]">
-                      <span className="font-label-sm text-[9px] text-[#6d7b6c] block">EM</span>
-                      <span className="font-label-lg text-[11px] font-bold text-[#121c2a]">{preset.em}</span>
-                    </div>
-                    <div>
-                      <span className="font-label-sm text-[9px] text-[#6d7b6c] block">Ca</span>
-                      <span className="font-label-lg text-[11px] font-bold text-[#006e2f]">{preset.ca}</span>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => onSelectPreset ? onSelectPreset(preset) : onOpenTargets()}
-                    className="w-full h-8 rounded-full bg-[#22c55e] hover:bg-[#006e2f] text-white font-label-sm text-[11px] font-bold flex items-center justify-center gap-1 shadow-xs transition-colors active:scale-95"
-                  >
-                    <span>Gunakan Formula</span>
-                    <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                  </button>
+                  <span className="material-symbols-outlined text-slate-300 group-hover:text-[#006e2f] group-hover:translate-x-0.5 transition-all text-[18px] shrink-0">
+                    chevron_right
+                  </span>
                 </div>
               ))}
             </div>
@@ -582,15 +566,16 @@ export const BerandaScreen: React.FC<BerandaScreenProps> = ({
         </div>
       </div>
 
-      {/* 9. Standar Mutu SNI Affirmation Footer */}
-      <div className="shrink-0 flex flex-col items-center justify-center py-4 text-center gap-1 text-[#6d7b6c]">
-        <div className="flex items-center gap-1.5 text-[#006e2f] font-semibold text-[12px]">
-          <span className="material-symbols-outlined text-[16px]">verified</span>
-          <span>Divalidasi Standar SNI 01-3930-2006 Kementan RI</span>
+        {/* 9. Standar Mutu SNI Affirmation Footer */}
+        <div className="shrink-0 flex flex-col items-center justify-center py-4 text-center gap-1 text-[#6d7b6c]">
+          <div className="flex items-center gap-1.5 text-[#006e2f] font-semibold text-[12px]">
+            <span className="material-symbols-outlined text-[16px]">verified</span>
+            <span>Divalidasi Standar SNI 01-3930-2006 Kementan RI</span>
+          </div>
+          <p className="text-[11px] text-[#6d7b6c]">
+            CluckFeed IoT System {farmConfig?.app_version || 'v1.4.0'} • Siap Dispense Kandang
+          </p>
         </div>
-        <p className="text-[11px] text-[#6d7b6c]">
-          CluckFeed IoT System {farmConfig?.app_version || 'v1.4.0'} • Siap Dispense Kandang
-        </p>
       </div>
     </div>
   );

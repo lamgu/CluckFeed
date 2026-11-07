@@ -187,67 +187,64 @@ export const PresetNutrisiScreen: React.FC<PresetNutrisiProps> = ({
   return (
     <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar pb-28 md:pb-12 flex flex-col overscroll-contain bg-[#f9fafb]">
       {/* Top Header Bar */}
-      <div className="bg-white border-b border-[#e6eeff] px-4 sm:px-6 lg:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between gap-3 shadow-xs">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="w-9 h-9 rounded-full bg-[#eff4ff] hover:bg-[#e6eeff] flex items-center justify-center text-[#121c2a] transition-colors"
-            title="Kembali ke Beranda"
-          >
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-          </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-headline-sm text-[16px] sm:text-[18px] font-bold text-[#121c2a] leading-tight">
-                Target & Preset Nutrisi
-              </h1>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold hidden sm:inline-flex items-center gap-1">
-                <span className="material-symbols-outlined text-[13px]">verified</span>
-                Template CSV Speck
-              </span>
+      <div className="bg-white border-b border-[#e6eeff] px-4 sm:px-6 lg:px-8 py-3.5 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-headline-sm text-[16px] sm:text-[18px] font-bold text-[#121c2a] leading-tight">
+                  Katalog Template Spek Nutrisi
+                </h1>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold hidden sm:inline-flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[13px]">verified</span>
+                  Template CSV Speck
+                </span>
+              </div>
+              <p className="font-label-sm text-[11px] sm:text-[12px] text-[#6d7b6c]">
+                Standar Pakan Unggas Resmi ({presets.length} Formula Terdaftar)
+              </p>
             </div>
-            <p className="font-label-sm text-[11px] sm:text-[12px] text-[#6d7b6c]">
-              Template Dasar Sesuai Standar Pakan Unggas Resmi ({presets.length} Formula)
-            </p>
-          </div>
-        </div>
-
-        {/* View Switcher Toggle & New Preset CTA */}
-        <div className="flex items-center gap-2">
-          <div className="bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff] flex items-center">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
-                viewMode === 'table'
-                  ? 'bg-[#006e2f] text-white shadow-xs'
-                  : 'text-[#6d7b6c] hover:text-[#121c2a]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">table_chart</span>
-              <span className="hidden sm:inline">Tabel Template Spek</span>
-            </button>
-            <button
-              onClick={() => setViewMode('cards')}
-              className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
-                viewMode === 'cards'
-                  ? 'bg-[#006e2f] text-white shadow-xs'
-                  : 'text-[#6d7b6c] hover:text-[#121c2a]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">grid_view</span>
-              <span className="hidden sm:inline">Kartu Preset</span>
-            </button>
           </div>
 
-          <button
-            onClick={openCreateModal}
-            className="bg-[#22c55e] hover:bg-[#006e2f] text-white font-label-md text-[12px] font-bold px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-xs active:scale-95 shrink-0"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span className="hidden md:inline">Preset Baru</span>
-          </button>
+          {/* View Switcher Toggle & New Preset CTA */}
+          <div className="flex items-center gap-2">
+            <div className="bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff] flex items-center">
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-[#006e2f] text-white shadow-xs'
+                    : 'text-[#6d7b6c] hover:text-[#121c2a]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">table_chart</span>
+                <span className="hidden sm:inline">Tabel Template Spek</span>
+              </button>
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === 'cards'
+                    ? 'bg-[#006e2f] text-white shadow-xs'
+                    : 'text-[#6d7b6c] hover:text-[#121c2a]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">grid_view</span>
+                <span className="hidden sm:inline">Kartu Preset</span>
+              </button>
+            </div>
+
+            <button
+              onClick={openCreateModal}
+              className="bg-[#22c55e] hover:bg-[#006e2f] text-white font-label-md text-[12px] font-bold px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-xs active:scale-95 shrink-0 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span className="hidden md:inline">Preset Baru</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1">
 
       {/* VIEW 1: TABEL TEMPLATE MATRIKS SESUAI FILE CSV */}
       {viewMode === 'table' && (
@@ -829,6 +826,7 @@ export const PresetNutrisiScreen: React.FC<PresetNutrisiProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

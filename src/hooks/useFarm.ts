@@ -59,7 +59,7 @@ export function useFarm() {
   }, [offline]);
 
   const updateConfig = useCallback(async (data: Partial<FarmConfig>) => {
-    setConfig(prev => ({ ...prev, ...data }));
+    setConfig(prev => ({ ...prev, ...(data as Record<string, string>) }));
     if (!offline) farmApi.updateConfig(data).catch(console.error);
   }, [offline]);
 

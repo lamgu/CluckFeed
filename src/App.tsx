@@ -10,7 +10,7 @@ import { DeviceFrame } from './components/DeviceFrame';
 import { NotificationModal } from './components/NotificationModal';
 import { BerandaScreen } from './screens/BerandaScreen';
 import { WorkflowStep1Ingredients } from './screens/WorkflowStep1Ingredients';
-import { WorkflowStep2Prices } from './screens/WorkflowStep2Prices';
+import { WorkflowStep2Nutrients } from './screens/WorkflowStep2Nutrients';
 import { WorkflowStep3Targets } from './screens/WorkflowStep3Targets';
 import { FormulaResultScreen } from './screens/FormulaResultScreen';
 import { DispenseScreen } from './screens/DispenseScreen';
@@ -23,18 +23,10 @@ import { StokGudangModal } from './screens/StokGudangModal';
 import { HardwareCalibrationModal } from './screens/HardwareCalibrationModal';
 import { HargaPasarModal } from './screens/HargaPasarModal';
 
-import { LivestockType, AgeUnit, FormulaResultData, PresetItem, HistoryFormulaItem, TargetNutrisi } from './types';
-import { solveFeedFormulation } from './utils/formulationSolver';
-import type { NutrientConstraintSpec } from './utils/lpSolver';
+import { AppProvider, useApp } from './context/AppContext';
+import { PresetItem, HistoryFormulaItem } from './types';
 
-// Dynamic data hooks
-import { useIngredients } from './hooks/useIngredients';
-import { usePresets } from './hooks/usePresets';
-import { useHistory } from './hooks/useHistory';
-import { useFarm } from './hooks/useFarm';
-import { useMarketPrices } from './hooks/useMarketPrices';
-
-type AppView =
+export type AppView =
   | 'tab'
   | 'workflow-step1'
   | 'workflow-step2'
@@ -43,34 +35,114 @@ type AppView =
   | 'dispense'
   | 'presets';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>('beranda');
-  const [currentView, setCurrentView] = useState<AppView>('tab');
-  const [resultSource, setResultSource] = useState<'beranda' | 'riwayat' | 'workflow-step3'>('beranda');
+// Helper to map pathname to view & tab
+function pathToViewTab(pathname: string): { view: AppView; tab: TabKey } {
+  const clean = pathname.replace(/\/$/, '') || '/';
+  if (clean === '/formula/step-1') return { view: 'workflow-step1', tab: 'beranda' };
+  if (clean === '/formula/step-2') return { view: 'workflow-step2', tab: 'beranda' };
+  if (clean === '/formula/step-3') return { view: 'workflow-step3', tab: 'beranda' };
+  if (clean === '/formula/result') return { view: 'workflow-result', tab: 'beranda' };
+  if (clean === '/dispense') return { view: 'dispense', tab: 'beranda' };
+  if (clean === '/presets') return { view: 'presets', tab: 'beranda' };
+  if (clean === '/riwayat') return { view: 'tab', tab: 'riwayat' };
+  if (clean === '/asisten-ai') return { view: 'tab', tab: 'asisten-ai' };
+  if (clean === '/matrix') return { view: 'tab', tab: 'matrix' };
+  if (clean === '/profil') return { view: 'tab', tab: 'profil' };
+  return { view: 'tab', tab: 'beranda' };
+}
 
-  // ---- Dynamic Data ----
+// Helper to map view & tab to URL pathname
+function viewTabToPath(view: AppView, tab: TabKey): string {
+  if (view === 'workflow-step1') return '/formula/step-1';
+  if (view === 'workflow-step2') return '/formula/step-2';
+  if (view === 'workflow-step3') return '/formula/step-3';
+  if (view === 'workflow-result') return '/formula/result';
+  if (view === 'dispense') return '/dispense';
+  if (view === 'presets') return '/presets';
+  if (tab === 'riwayat') return '/riwayat';
+  if (tab === 'asisten-ai') return '/asisten-ai';
+  if (tab === 'matrix') return '/matrix';
+  if (tab === 'profil') return '/profil';
+  return '/';
+}
+
+function AppContent() {
   const {
-    ingredients, loading: loadingIngs,
-    toggleIngredient, updateIngredient, addIngredient, removeIngredient, resetDefaults
-  } = useIngredients();
+    // Master DB Ingredients (From SQLite)
+    ingredients,
+    loadingIngs,
+    updateIngredient,
+    addIngredient,
+    removeIngredient,
+    resetDefaults,
 
-  const { presets, addPreset, updatePreset, removePreset } = usePresets();
-  const { history, addHistory, updateHistory, removeHistory, clearAllHistory } = useHistory();
-  const { config: farmConfig, kandang, sensor, schedule } = useFarm();
-  const { marketPrices, updateMarketPrices } = useMarketPrices();
+    // Formulation Session (Isolated from Master DB)
+    formulationIngredients,
+    customNutrientOverrides,
+    toggleFormulationIngredient,
+    selectAllFormulationIngredients,
+    updateFormulationIngredientPrice,
+    toggleFormulationConstraint,
+    updateFormulationIngredientConstraint,
+    updateFormulationNutrient,
+    resetIngredientNutrientsToDefault,
+    resetAllNutrientsToDefault,
+    isIngredientCustom,
 
-  // ---- Formulation State ----
-  const [livestock, setLivestock] = useState<LivestockType>('broiler');
-  const [ageValue, setAgeValue] = useState<number>(21);
-  const [ageUnit, setAgeUnit] = useState<AgeUnit>('hari');
-  const [batchKg, setBatchKg] = useState<number>(500);
-  const [currentResult, setCurrentResult] = useState<FormulaResultData | null>(null);
+    // Formulation Parameters
+    livestock,
+    setLivestock,
+    ageValue,
+    setAgeValue,
+    ageUnit,
+    setAgeUnit,
+    batchKg,
+    setBatchKg,
+    currentResult,
+    resultSource,
+    handleCalculate,
+    handleSelectPreset,
+    handleRepeatFormula,
+    handleViewFormulaDetails,
+    handleApplyAISubstitution,
+    handleUpdateStock,
 
-  // ---- Modals ----
-  const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
-  const [showStockModal, setShowStockModal] = useState<boolean>(false);
-  const [showCalibrationModal, setShowCalibrationModal] = useState<boolean>(false);
-  const [showMarketPriceModal, setShowMarketPriceModal] = useState<boolean>(false);
+    // Presets & History
+    presets,
+    addPreset,
+    updatePreset,
+    removePreset,
+    history,
+    addHistory,
+    updateHistory,
+    removeHistory,
+    clearAllHistory,
+
+    // Farm & Sensors
+    farmConfig,
+    kandang,
+    sensor,
+    schedule,
+
+    // Market Prices
+    marketPrices,
+    updateMarketPrices,
+
+    // Modals
+    showNotificationModal,
+    setShowNotificationModal,
+    showStockModal,
+    setShowStockModal,
+    showCalibrationModal,
+    setShowCalibrationModal,
+    showMarketPriceModal,
+    setShowMarketPriceModal
+  } = useApp();
+
+  // Initial navigation state parsed from window.location.pathname
+  const initialNav = pathToViewTab(window.location.pathname);
+  const [activeTab, setActiveTab] = useState<TabKey>(initialNav.tab);
+  const [currentView, setCurrentView] = useState<AppView>(initialNav.view);
 
   // Smooth scroll to top helper
   const scrollToTop = useCallback(() => {
@@ -78,15 +150,18 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Central Navigation function with browser history synchronization
+  // Central Navigation function with browser history and URL synchronization
   const navigateTo = useCallback((newView: AppView, newTab?: TabKey) => {
+    const targetTab = newTab || (newView === 'tab' ? activeTab : activeTab);
     setCurrentView(newView);
     if (newTab) setActiveTab(newTab);
+
+    const targetPath = viewTabToPath(newView, targetTab);
     try {
       window.history.pushState(
-        { view: newView, tab: newTab || activeTab, _cluckfeed: true },
+        { view: newView, tab: targetTab, _cluckfeed: true },
         '',
-        window.location.pathname
+        targetPath
       );
     } catch {}
     scrollToTop();
@@ -99,210 +174,84 @@ export default function App() {
 
   // Browser Back / Forward buttons handler
   useEffect(() => {
-    // Replace the initial history entry so there's always a known in-app state at the bottom
+    const initialPath = viewTabToPath(initialNav.view, initialNav.tab);
     try {
-      window.history.replaceState({ view: 'tab', tab: 'beranda', _cluckfeed: true }, '', window.location.pathname);
+      window.history.replaceState(
+        { view: initialNav.view, tab: initialNav.tab, _cluckfeed: true },
+        '',
+        initialPath
+      );
     } catch {}
 
     const handlePopState = (event: PopStateEvent) => {
       if (event.state && event.state._cluckfeed && event.state.view) {
-        // Known in-app state: restore it
         setCurrentView(event.state.view);
         if (event.state.tab) setActiveTab(event.state.tab);
       } else {
-        // Unknown / external state (hit real bottom of browser history).
-        // Push a fresh anchor so browser can't navigate away from the app.
-        try {
-          window.history.pushState({ view: 'tab', tab: 'beranda', _cluckfeed: true }, '', window.location.pathname);
-        } catch {}
-        setCurrentView('tab');
-        setActiveTab('beranda');
+        const fromPath = pathToViewTab(window.location.pathname);
+        setCurrentView(fromPath.view);
+        setActiveTab(fromPath.tab);
       }
       scrollToTop();
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [scrollToTop]);
+  }, [initialNav.view, initialNav.tab, scrollToTop]);
 
-  // ---- Ingredient handlers ----
-  const handleToggleIngredient = useCallback((id: string) => {
-    toggleIngredient(id);
-  }, [toggleIngredient]);
-
-  const handleResetIngredients = useCallback(() => {
-    resetDefaults();
-  }, [resetDefaults]);
-
-  const handleUpdatePrice = useCallback((id: string, price: number) => {
-    updateIngredient(id, { currentPrice: price });
-  }, [updateIngredient]);
-
-  const handleToggleConstraint = useCallback((id: string) => {
-    const ing = ingredients.find(i => i.id === id);
-    if (ing) updateIngredient(id, { hasConstraint: !ing.hasConstraint });
-  }, [ingredients, updateIngredient]);
-
-  const handleUpdateConstraint = useCallback((id: string, min?: number, max?: number) => {
-    const patch: Partial<typeof ingredients[0]> = {};
-    if (min !== undefined) patch.minConstraint = min;
-    if (max !== undefined) patch.maxConstraint = max;
-    updateIngredient(id, patch);
-  }, [updateIngredient]);
-
-  const handleUpdateStock = useCallback((id: string, newStockKg: number, newPrice: number) => {
-    updateIngredient(id, { inStockKg: newStockKg, currentPrice: newPrice });
-  }, [updateIngredient]);
-
-  // ---- Calculate Formulation ----
-  const handleCalculate = useCallback((customNutrients?: Partial<TargetNutrisi>, customConstraints?: NutrientConstraintSpec[]) => {
-    const effectiveDays = ageUnit === 'minggu' ? ageValue * 7 : ageValue;
-    let phaseStr = 'Grower';
-    if (livestock === 'broiler') {
-      if (effectiveDays <= 12) phaseStr = 'Starter';
-      else if (effectiveDays <= 28) phaseStr = 'Grower';
-      else phaseStr = 'Finisher';
-    } else {
-      if (effectiveDays <= 35) phaseStr = 'Starter';
-      else if (effectiveDays <= 70) phaseStr = 'Grower';
-      else if (effectiveDays <= 105) phaseStr = 'Developer';
-      else if (effectiveDays <= 126) phaseStr = 'Pre-Layer';
-      else if (effectiveDays <= 315) phaseStr = 'Layer-1';
-      else if (effectiveDays <= 560) phaseStr = 'Layer-2';
-      else phaseStr = 'Layer-3';
-    }
-
-    const currentMarketPrice = livestock === 'broiler' ? marketPrices.broiler : marketPrices.layer;
-    const result = solveFeedFormulation(ingredients, livestock, phaseStr, batchKg, customNutrients, currentMarketPrice, customConstraints);
-    setCurrentResult(result);
-    setResultSource('workflow-step3');
-    navigateTo('workflow-result');
-
-    // Save to history (non-blocking)
-    const timeStr = 'Hari ini, ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-    const pills = result.ingredients.slice(0, 4).map(i => `${i.name.split(' ')[0]} ${i.percentage}%`);
-    addHistory({
-      id: result.id,
-      title: result.batchName,
-      batchInfo: `${result.batchNumber} • ${livestock === 'broiler' ? 'Broiler' : 'Layer'} ${phaseStr} (${batchKg} kg)`,
-      timeStr,
-      status: result.isFeasible ? 'layak' : 'koreksi',
-      statusLabel: result.isFeasible ? 'Layak SNI' : 'Perlu Koreksi',
-      pills,
-      totalWeight: batchKg,
-      costPerKg: result.costPerKg,
-      totalCost: result.totalCost,
-      icon: livestock === 'broiler' ? 'grain' : 'egg',
-      category: result.isFeasible ? 'layak' : 'koreksi',
-    }).catch(console.error);
-  }, [ingredients, livestock, ageUnit, ageValue, batchKg, addHistory, navigateTo]);
-
-  // ---- Preset Selection ----
-  const handleSelectPreset = useCallback((preset: PresetItem) => {
-    const titleLower = (preset.title || '').toLowerCase();
-    const phaseLower = (preset.phase || '').toLowerCase();
-    const isLayer = preset.category === 'layer' || 
-                    titleLower.includes('layer') || 
-                    titleLower.includes('petelur') || 
-                    phaseLower.includes('layer') || 
-                    phaseLower.includes('pullet');
-
-    if (isLayer) {
-      setLivestock('layer');
-      setAgeValue(28);
-      setAgeUnit('minggu');
-    } else {
-      setLivestock('broiler');
-      if (titleLower.includes('starter') || phaseLower.includes('starter')) {
-        setAgeValue(10);
-        setAgeUnit('hari');
-      } else if (titleLower.includes('finisher') || phaseLower.includes('finisher')) {
-        setAgeValue(32);
-        setAgeUnit('hari');
-      } else {
-        setAgeValue(21);
-        setAgeUnit('hari');
-      }
-    }
+  // Preset Selection with Navigation
+  const onSelectPresetAndNavigate = useCallback((preset: PresetItem) => {
+    handleSelectPreset(preset);
     navigateTo('workflow-step3');
-  }, [navigateTo]);
+  }, [handleSelectPreset, navigateTo]);
 
-  // ---- Riwayat handlers ----
-  const handleRepeatFormula = useCallback((item: HistoryFormulaItem) => {
-    setBatchKg(item.totalWeight);
-    const isLayer = item.title.toLowerCase().includes('layer') || item.batchInfo.toLowerCase().includes('layer');
-    const benchmark = isLayer ? marketPrices.layer : marketPrices.broiler;
-    const result = solveFeedFormulation(ingredients, isLayer ? 'layer' : 'broiler', 'Finisher', item.totalWeight, undefined, benchmark);
-    result.batchName = item.title;
-    result.totalCost = item.totalCost;
-    result.costPerKg = item.costPerKg;
-    setCurrentResult(result);
-    setResultSource('riwayat');
+  // Repeat Formula with Navigation
+  const onRepeatFormulaAndNavigate = useCallback((item: HistoryFormulaItem) => {
+    handleRepeatFormula(item);
     navigateTo('dispense');
-  }, [ingredients, marketPrices, navigateTo]);
+  }, [handleRepeatFormula, navigateTo]);
 
-  const handleViewFormulaDetails = useCallback((item?: HistoryFormulaItem, source: 'beranda' | 'riwayat' = 'riwayat') => {
-    const targetWeight = item?.totalWeight || 500;
-    const isLayer = item?.title.toLowerCase().includes('layer') || (item?.batchInfo || '').toLowerCase().includes('layer');
-    const benchmark = isLayer ? marketPrices.layer : marketPrices.broiler;
-    const result = solveFeedFormulation(ingredients, isLayer ? 'layer' : 'broiler', 'Finisher', targetWeight, undefined, benchmark);
-    if (item) {
-      result.id = item.id;
-      result.batchName = item.title;
-      result.costPerKg = item.costPerKg;
-      result.totalCost = item.totalCost;
-      result.totalBatchKg = item.totalWeight;
-      result.isFeasible = item.status === 'layak';
-      const parts = item.batchInfo.split(' • ');
-      if (parts.length > 0 && parts[0].startsWith('#')) {
-        result.batchNumber = parts[0];
-      }
-    }
-    setCurrentResult(result);
-    setResultSource(source);
+  // View Formula Details with Navigation
+  const onViewFormulaDetailsAndNavigate = useCallback((item?: HistoryFormulaItem, source: 'beranda' | 'riwayat' = 'riwayat') => {
+    handleViewFormulaDetails(item, source);
     navigateTo('workflow-result');
-  }, [ingredients, navigateTo]);
+  }, [handleViewFormulaDetails, navigateTo]);
 
-  // ---- AI Substitution ----
-  const handleApplyAISubstitution = useCallback(() => {
-    updateIngredient('ikan', { selected: true });
-    updateIngredient('sbm', { hasConstraint: true, maxConstraint: 25 });
-    setTimeout(() => {
-      const result = solveFeedFormulation(ingredients, 'broiler', 'Finisher', 500);
-      setCurrentResult(result);
-      setResultSource('workflow-step3');
+  // AI Substitution Callback
+  const onAISubstitution = useCallback(() => {
+    handleApplyAISubstitution(() => {
       navigateTo('workflow-result');
-    }, 100);
-  }, [ingredients, updateIngredient, navigateTo]);
+    });
+  }, [handleApplyAISubstitution, navigateTo]);
 
-  // ---- Header props helper ----
+  // Header Props Helper
   const getHeaderProps = () => {
     switch (currentView) {
       case 'workflow-step1':
         return {
           title: 'Formulasi Ransum Baru (1/3)',
-          subtitle: 'Pilih Bahan Baku Tersedia',
+          subtitle: 'Pemilihan Bahan Baku & Batas Inklusi',
           showBack: true,
           onBack: () => navigateTo('tab', 'beranda')
         };
       case 'workflow-step2':
         return {
           title: 'Formulasi Ransum Baru (2/3)',
-          subtitle: 'Update Harga & Batasan Takaran',
+          subtitle: 'Pemeriksaan & Penyesuaian Matriks Nutrisi',
           showBack: true,
           onBack: () => navigateTo('workflow-step1')
         };
       case 'workflow-step3':
         return {
           title: 'Formulasi Ransum Baru (3/3)',
-          subtitle: 'Target Kebutuhan Nutrisi SNI',
+          subtitle: 'Pengaturan Target Nutrisi SNI',
           showBack: true,
           onBack: () => navigateTo('workflow-step2')
         };
       case 'workflow-result':
         return {
           title: 'Detail Batch Ransum',
-          subtitle: currentResult?.batchNumber || 'Hasil Optimasi',
+          subtitle: currentResult?.batchNumber || 'Hasil Optimasi Least Cost',
           showBack: true,
           onBack: () => {
             if (resultSource === 'riwayat') {
@@ -337,7 +286,7 @@ export default function App() {
       default:
         if (activeTab === 'riwayat') return { title: 'Riwayat Formula', subtitle: 'Arsip Racikan Kandang' };
         if (activeTab === 'asisten-ai') return { title: 'Asisten AI', subtitle: 'Dokter Nutrisi Kandang' };
-        if (activeTab === 'matrix') return { title: 'Matrix Bahan Baku', subtitle: 'Nutrisi & Harga Pasar' };
+        if (activeTab === 'matrix') return { title: 'Matrix Bahan Baku', subtitle: 'Nutrisi Lab & Harga Master' };
         if (activeTab === 'profil') return { title: 'Profil & Pengaturan', subtitle: farmConfig.farm_name };
         return { title: undefined, subtitle: 'Beranda' };
     }
@@ -345,7 +294,7 @@ export default function App() {
 
   const headerProps = getHeaderProps();
 
-  // Show loading splash while ingredients load
+  // Show loading splash while ingredients load from SQLite backend
   if (loadingIngs) {
     return (
       <DeviceFrame>
@@ -368,38 +317,48 @@ export default function App() {
           subtitle={headerProps.subtitle}
           showBack={headerProps.showBack}
           onBack={headerProps.onBack}
-          onHomeClick={handleGoHome}
+          onHomeClick={currentView.startsWith('workflow-') ? handleGoHome : undefined}
           onNotificationClick={() => setShowNotificationModal(true)}
           onProfileClick={() => navigateTo('tab', 'profil')}
           activeTab={activeTab}
           onTabChange={(tab) => navigateTo('tab', tab)}
-          showNavTabs={currentView === 'tab'}
+          showNavTabs={!currentView.startsWith('workflow-')}
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 w-full max-w-7xl mx-auto overflow-hidden flex flex-col min-h-0 relative px-0 sm:px-4 lg:px-6">
-          {/* Workflow Views */}
+        <main className="flex-1 w-full overflow-hidden flex flex-col min-h-0 relative">
+          {/* Workflow Step 1: Pemilihan Bahan Baku & Batas Inklusi (Tabel Interaktif) */}
           {currentView === 'workflow-step1' && (
             <WorkflowStep1Ingredients
-              ingredients={ingredients}
-              onToggleIngredient={handleToggleIngredient}
-              onResetDefaults={handleResetIngredients}
+              ingredients={formulationIngredients}
+              onToggleIngredient={toggleFormulationIngredient}
+              onSelectAll={selectAllFormulationIngredients}
+              onUpdatePrice={updateFormulationIngredientPrice}
+              onUpdateConstraint={updateFormulationIngredientConstraint}
+              onResetDefaults={resetDefaults}
               onNext={() => navigateTo('workflow-step2')}
               onBack={() => navigateTo('tab', 'beranda')}
+              onGoHome={handleGoHome}
             />
           )}
 
+          {/* Workflow Step 2: Pemeriksaan & Penyesuaian Matriks Nutrisi (Tabel Matriks Nutrisi 22 Parameter) */}
           {currentView === 'workflow-step2' && (
-            <WorkflowStep2Prices
-              ingredients={ingredients}
-              onUpdatePrice={handleUpdatePrice}
-              onToggleConstraint={handleToggleConstraint}
-              onUpdateConstraint={handleUpdateConstraint}
+            <WorkflowStep2Nutrients
+              ingredients={formulationIngredients}
+              masterIngredients={ingredients}
+              customOverrides={customNutrientOverrides}
+              onUpdateNutrient={updateFormulationNutrient}
+              onResetIngredient={resetIngredientNutrientsToDefault}
+              onResetAll={resetAllNutrientsToDefault}
+              isCustom={isIngredientCustom}
               onNext={() => navigateTo('workflow-step3')}
               onBack={() => navigateTo('workflow-step1')}
+              onGoHome={handleGoHome}
             />
           )}
 
+          {/* Workflow Step 3: Pengaturan Target Nutrisi (8 Nutrisi Utama + 14 Nutrisi Tambahan) */}
           {currentView === 'workflow-step3' && (
             <WorkflowStep3Targets
               livestock={livestock}
@@ -410,23 +369,60 @@ export default function App() {
               setAgeUnit={setAgeUnit}
               batchKg={batchKg}
               setBatchKg={setBatchKg}
-              onCalculate={handleCalculate}
+              onCalculate={(customNutrients, customConstraints) => {
+                handleCalculate(customNutrients, customConstraints);
+                navigateTo('workflow-result');
+              }}
               onBack={() => navigateTo('workflow-step2')}
               onGoHome={handleGoHome}
             />
           )}
 
-          {currentView === 'workflow-result' && currentResult && (
-            <FormulaResultScreen
-              data={currentResult}
-              onModify={() => navigateTo('workflow-step3')}
-              onSendToDispense={() => navigateTo('dispense')}
-              onAskAI={() => navigateTo('tab', 'asisten-ai')}
-              onForceSave={() => navigateTo('dispense')}
-              onOpenMarketPriceModal={() => setShowMarketPriceModal(true)}
-            />
+          {/* Workflow Result: Hasil Formulasi Least Cost Simplex LP */}
+          {currentView === 'workflow-result' && (
+            currentResult ? (
+              <FormulaResultScreen
+                data={currentResult}
+                onModify={() => navigateTo('workflow-step3')}
+                onSendToDispense={() => navigateTo('dispense')}
+                onAskAI={() => navigateTo('tab', 'asisten-ai')}
+                onForceSave={() => navigateTo('dispense')}
+                onOpenMarketPriceModal={() => setShowMarketPriceModal(true)}
+                onSaveFormula={(formula) => {
+                  const timeStr = 'Hari ini, ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                  const pills = formula.ingredients.slice(0, 4).map(i => `${i.name.split(' ')[0]} ${Number(i.percentage.toFixed(1))}%`);
+                  addHistory({
+                    id: formula.id || `cf-${Date.now()}`,
+                    title: formula.batchName,
+                    batchInfo: `${formula.batchNumber} • ${formula.livestock === 'broiler' ? 'Broiler' : 'Layer'} (${formula.totalBatchKg} kg)`,
+                    timeStr,
+                    status: formula.isFeasible ? 'layak' : 'koreksi',
+                    statusLabel: formula.isFeasible ? 'Layak SNI' : 'Perlu Koreksi',
+                    pills,
+                    totalWeight: formula.totalBatchKg,
+                    costPerKg: formula.costPerKg,
+                    totalCost: formula.totalCost,
+                    icon: formula.livestock === 'broiler' ? 'grain' : 'egg',
+                    category: formula.isFeasible ? 'layak' : 'koreksi',
+                  }).catch(console.error);
+                }}
+              />
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                <span className="material-symbols-outlined text-[48px] text-[#6d7b6c] mb-2">assignment_late</span>
+                <p className="text-[14px] font-medium text-[#121c2a]">Belum ada hasil formulasi aktif</p>
+                <button
+                  type="button"
+                  onClick={() => navigateTo('workflow-step1')}
+                  className="mt-4 px-5 py-2.5 rounded-full bg-[#006e2f] text-white font-semibold text-[13px] hover:bg-[#005524] transition-all shadow-md"
+                >
+                  Mulai Formulasi Baru
+                </button>
+              </div>
+            )
           )}
 
+          {/* Dispense Screen: Kontrol Dispenser ESP32 IoT */}
           {currentView === 'dispense' && (
             <DispenseScreen
               batchName={currentResult?.batchName || 'Broiler Grower 500 kg'}
@@ -438,10 +434,11 @@ export default function App() {
             />
           )}
 
+          {/* Preset Nutrisi Catalog Screen */}
           {currentView === 'presets' && (
             <PresetNutrisiScreen
               presets={presets}
-              onSelectPreset={handleSelectPreset}
+              onSelectPreset={onSelectPresetAndNavigate}
               onAddPreset={addPreset}
               onUpdatePreset={updatePreset}
               onDeletePreset={removePreset}
@@ -460,8 +457,8 @@ export default function App() {
                   schedule={schedule}
                   history={history}
                   presets={presets}
-                  onSelectPreset={handleSelectPreset}
-                  onRepeatFormula={handleRepeatFormula}
+                  onSelectPreset={onSelectPresetAndNavigate}
+                  onRepeatFormula={onRepeatFormulaAndNavigate}
                   onDeleteHistory={removeHistory}
                   onStartFormulation={() => navigateTo('workflow-step1')}
                   onOpenIngredients={() => navigateTo('workflow-step1')}
@@ -472,15 +469,15 @@ export default function App() {
                   onOpenStock={() => setShowStockModal(true)}
                   onOpenHistory={() => navigateTo('tab', 'riwayat')}
                   onOpenAssistant={() => navigateTo('tab', 'asisten-ai')}
-                  onViewLastFormula={(item) => handleViewFormulaDetails(item, 'beranda')}
+                  onViewLastFormula={(item) => onViewFormulaDetailsAndNavigate(item, 'beranda')}
                 />
               )}
 
               {activeTab === 'riwayat' && (
                 <RiwayatScreen
                   history={history}
-                  onViewDetails={(item) => handleViewFormulaDetails(item, 'riwayat')}
-                  onRepeatFormula={handleRepeatFormula}
+                  onViewDetails={(item) => onViewFormulaDetailsAndNavigate(item, 'riwayat')}
+                  onRepeatFormula={onRepeatFormulaAndNavigate}
                   onAddHistory={addHistory}
                   onUpdateHistory={updateHistory}
                   onDeleteHistory={removeHistory}
@@ -490,7 +487,7 @@ export default function App() {
 
               {activeTab === 'asisten-ai' && (
                 <AsistenAiScreen
-                  onApplySubstitution={handleApplyAISubstitution}
+                  onApplySubstitution={onAISubstitution}
                 />
               )}
 
@@ -516,7 +513,7 @@ export default function App() {
           )}
         </main>
 
-        {/* Global Bottom Navigation */}
+        {/* Global Bottom Navigation on Tab Views */}
         {currentView === 'tab' && (
           <BottomNav
             activeTab={activeTab}
@@ -550,5 +547,13 @@ export default function App() {
         )}
       </div>
     </DeviceFrame>
+  );
+}
+
+export default function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }

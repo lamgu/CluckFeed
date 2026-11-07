@@ -227,59 +227,62 @@ export const MatrixBahanBakuScreen: React.FC<MatrixBahanBakuScreenProps> = ({
   return (
     <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar pb-24 md:pb-12 flex flex-col overscroll-contain bg-[#f9fafb]">
       {/* Top Header Bar */}
-      <div className="bg-white border-b border-[#e6eeff] px-4 sm:px-6 lg:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between gap-3 shadow-xs">
-        <div>
+      <div className="bg-white border-b border-[#e6eeff] px-4 sm:px-6 lg:px-8 py-3.5 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-headline-sm text-[16px] sm:text-[18px] font-bold text-[#121c2a] leading-tight">
+                Matrix Bahan Baku
+              </h1>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold inline-flex items-center gap-1">
+                <span className="material-symbols-outlined text-[13px]">verified</span>
+                Sheet1 CSV Standar Lab
+              </span>
+            </div>
+            <p className="font-label-sm text-[11px] sm:text-[12px] text-[#6d7b6c]">
+              Database 23 Parameter Nutrisi Lengkap ({totalBahan} Bahan Baku Terdaftar)
+            </p>
+          </div>
+
+          {/* View Switcher & Action CTA */}
           <div className="flex items-center gap-2">
-            <h1 className="font-headline-sm text-[16px] sm:text-[18px] font-bold text-[#121c2a] leading-tight">
-              Matrix Bahan Baku
-            </h1>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold inline-flex items-center gap-1">
-              <span className="material-symbols-outlined text-[13px]">verified</span>
-              Sheet1 CSV Standar Lab
-            </span>
-          </div>
-          <p className="font-label-sm text-[11px] sm:text-[12px] text-[#6d7b6c]">
-            Database 23 Parameter Nutrisi Lengkap ({totalBahan} Bahan Baku Terdaftar)
-          </p>
-        </div>
+            <div className="bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff] flex items-center">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-[#006e2f] text-white shadow-xs'
+                    : 'text-[#6d7b6c] hover:text-[#121c2a]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">grid_view</span>
+                <span className="hidden sm:inline">Tampilan Kartu</span>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-[#006e2f] text-white shadow-xs'
+                    : 'text-[#6d7b6c] hover:text-[#121c2a]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">table_chart</span>
+                <span className="hidden sm:inline">Tabel Matriks</span>
+              </button>
+            </div>
 
-        {/* View Switcher & Action CTA */}
-        <div className="flex items-center gap-2">
-          <div className="bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff] flex items-center">
             <button
-              onClick={() => setViewMode('cards')}
-              className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
-                viewMode === 'cards'
-                  ? 'bg-[#006e2f] text-white shadow-xs'
-                  : 'text-[#6d7b6c] hover:text-[#121c2a]'
-              }`}
+              onClick={openCreateModal}
+              className="bg-[#22c55e] hover:bg-[#006e2f] text-white font-label-md text-[12px] font-bold px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-xs active:scale-95 shrink-0 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">grid_view</span>
-              <span className="hidden sm:inline">Tampilan Kartu</span>
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`px-3 py-1 rounded-full text-[12px] font-bold flex items-center gap-1.5 transition-all ${
-                viewMode === 'table'
-                  ? 'bg-[#006e2f] text-white shadow-xs'
-                  : 'text-[#6d7b6c] hover:text-[#121c2a]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">table_chart</span>
-              <span className="hidden sm:inline">Tabel Matriks</span>
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span className="hidden md:inline">Tambah Bahan</span>
             </button>
           </div>
-
-          <button
-            onClick={openCreateModal}
-            className="bg-[#22c55e] hover:bg-[#006e2f] text-white font-label-md text-[12px] font-bold px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-xs active:scale-95 shrink-0"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span className="hidden md:inline">Tambah Bahan</span>
-          </button>
         </div>
       </div>
 
+      <div className="max-w-6xl mx-auto w-full flex flex-col flex-1">
       {/* Stats Summary Row */}
       <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-2 grid grid-cols-3 gap-3">
         <div className="bg-white rounded-[18px] p-3.5 shadow-xs border border-[#e5e7eb] flex flex-col gap-0.5">
@@ -1076,6 +1079,7 @@ export const MatrixBahanBakuScreen: React.FC<MatrixBahanBakuScreenProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

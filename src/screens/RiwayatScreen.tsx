@@ -169,7 +169,8 @@ export const RiwayatScreen: React.FC<RiwayatScreenProps> = ({
   };
 
   return (
-    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-28 md:pb-12 gap-5 pt-3 flex flex-col overscroll-contain">
+    <div className="flex-1 min-h-0 w-full overflow-y-auto phone-scrollbar px-4 sm:px-6 lg:px-8 pb-28 md:pb-12 pt-3 flex flex-col overscroll-contain">
+      <div className="max-w-6xl mx-auto w-full flex flex-col gap-5">
       {/* Top Section: Header & Actions */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
@@ -696,15 +697,16 @@ export const RiwayatScreen: React.FC<RiwayatScreenProps> = ({
         </div>
       )}
 
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all">
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#27313f] text-white shadow-xl text-[12px] font-medium animate-fadeIn">
-            <span className="material-symbols-outlined text-[18px] text-[#6bff8f]">check_circle</span>
-            <span>{toastMessage}</span>
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#27313f] text-white shadow-xl text-[12px] font-medium animate-fadeIn">
+              <span className="material-symbols-outlined text-[18px] text-[#6bff8f]">check_circle</span>
+              <span>{toastMessage}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

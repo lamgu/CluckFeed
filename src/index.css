@@ -69,22 +69,23 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 110, 47, 0.25) transparent;
+  scrollbar-color: rgba(0, 110, 47, 0.35) rgba(0, 0, 0, 0.04);
 }
 .phone-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  display: block;
+  width: 7px !important;
+  height: 7px !important;
+  display: block !important;
 }
 .phone-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-radius: 9999px;
 }
 .phone-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 110, 47, 0.25);
+  background: rgba(0, 110, 47, 0.35) !important;
   border-radius: 9999px;
 }
 .phone-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 110, 47, 0.5);
+  background: rgba(0, 110, 47, 0.65) !important;
 }
 
 /* Material Symbols configuration */

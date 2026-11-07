@@ -39,10 +39,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="shrink-0 w-full z-30 bg-[#ffffff]/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-[#e6eeff]">
-      <div className="max-w-7xl w-full mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div className="max-w-6xl w-full mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         <div
           onClick={onHomeClick}
-          className={`flex items-center gap-3 min-w-0 ${onHomeClick ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
+          className={`flex items-center gap-3 min-w-0 ${onHomeClick ? 'cursor-pointer hover:opacity-90 transition-opacity' : 'cursor-default'}`}
           title={onHomeClick ? 'Klik untuk kembali ke Beranda' : undefined}
         >
           {showBack && (
@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
                 if (onBack) onBack();
               }}
               aria-label="Kembali"
-              className="w-10 h-10 -ml-1 flex items-center justify-center rounded-full text-[#121c2a] hover:bg-[#eff4ff] active:scale-95 transition-all"
+              className="w-10 h-10 -ml-1 flex items-center justify-center rounded-full text-[#121c2a] hover:bg-[#eff4ff] active:scale-95 transition-all cursor-pointer shrink-0"
             >
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </button>
@@ -65,34 +65,35 @@ export const Header: React.FC<HeaderProps> = ({
           />
 
           <div className="flex flex-col min-w-0">
-            {title ? (
-              <h1 className="font-headline-sm text-[16px] text-[#121c2a] font-semibold truncate leading-tight">
-                {title}
-              </h1>
-            ) : (
-              <span className="font-headline-sm text-[17px] text-[#006e2f] font-bold tracking-tight leading-none">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[17px] text-[#006e2f] font-extrabold tracking-tight leading-none shrink-0">
                 CluckFeed
               </span>
-            )}
-            <span className="font-label-sm text-[11px] text-[#3d4a3d] font-medium leading-tight truncate">
-              {subtitle || 'Formulasi Pakan Presisi'}
+              {title && (
+                <span className="text-[13px] text-[#121c2a] font-bold truncate hidden sm:inline border-l border-slate-300 pl-2 ml-0.5">
+                  {title}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] text-[#6d7b6c] font-medium leading-tight truncate mt-0.5">
+              {subtitle || (title ? title : 'Formulasi Pakan Presisi')}
             </span>
           </div>
         </div>
 
         {/* Desktop Web Navigation Tabs */}
         {showNavTabs && onTabChange && (
-          <nav className="hidden md:flex items-center gap-1 bg-[#eff4ff] p-1.5 rounded-full border border-[#e6eeff] shadow-xs">
+          <nav className="hidden md:flex items-center gap-1 bg-[#eff4ff] p-1 rounded-full border border-[#e6eeff] shadow-xs">
             {desktopTabs.map((tab) => {
               const isActive = activeTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => onTabChange(tab.key)}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] transition-all cursor-pointer ${
                     isActive
                       ? 'bg-white text-[#006e2f] shadow-xs font-bold'
-                      : 'text-[#6d7b6c] hover:text-[#121c2a] hover:bg-white/60'
+                      : 'text-[#6d7b6c] hover:text-[#121c2a] hover:bg-white/60 font-semibold'
                   }`}
                 >
                   <span
@@ -114,7 +115,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onHomeClick}
               aria-label="Ke Beranda"
               title="Kembali ke Beranda"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eff4ff] hover:bg-[#e6eeff] text-[#006e2f] border border-[#e6eeff] font-label-md text-[12px] font-bold shadow-xs active:scale-95 transition-all"
+              className="h-10 flex items-center gap-1.5 px-4 rounded-full bg-[#eff4ff] hover:bg-[#e6eeff] text-[#006e2f] border border-[#e6eeff] text-[12px] font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">home</span>
               <span className="hidden sm:inline">Beranda</span>
@@ -124,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onNotificationClick}
             aria-label="Notifikasi"
-            className="w-10 h-10 flex items-center justify-center rounded-full text-[#3d4a3d] hover:bg-[#eff4ff] transition-colors relative"
+            className="w-10 h-10 flex items-center justify-center rounded-full text-[#3d4a3d] hover:bg-[#eff4ff] transition-colors relative cursor-pointer"
           >
             <span className="material-symbols-outlined text-[22px]">notifications</span>
             <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#ef9900]" />
@@ -133,9 +134,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onProfileClick}
             aria-label="Profil Peternak"
-            className="w-8 h-8 rounded-full bg-[#006e2f] flex items-center justify-center hover:opacity-90 active:scale-95 transition-all overflow-hidden border border-emerald-600 shadow-xs"
+            className="w-10 h-10 rounded-full bg-[#006e2f] flex items-center justify-center hover:opacity-90 active:scale-95 transition-all overflow-hidden border border-emerald-600 shadow-xs cursor-pointer text-white"
           >
-            <span className="material-symbols-outlined text-white text-[18px]">person</span>
+            <span className="material-symbols-outlined text-white text-[20px]">person</span>
           </button>
         </div>
       </div>

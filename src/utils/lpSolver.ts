@@ -455,9 +455,9 @@ export function runLPSolver(input: LPSolverInput): LPSolverOutput {
   // 8. Generate ingredients composition breakdown
   const ingResults: LPIngredientResult[] = ingredients.map((ing, i) => {
     const frac = normFractions[i];
-    const pct = frac * 100;
-    const kg = frac * batchKg;
-    const totalItemCost = frac * batchKg * ing.currentPrice;
+    const pct = Number((frac * 100).toFixed(1));
+    const kg = Number((frac * batchKg).toFixed(1));
+    const totalItemCost = Math.round(frac * batchKg * ing.currentPrice);
     return {
       id: ing.id,
       name: ing.name,

@@ -88,6 +88,17 @@ export interface LPIngredientResult {
 
 export type LPSolverStatus = 'optimal' | 'infeasible' | 'error';
 
+export type FormulaIngredientItem = {
+  id: string;
+  name: string;
+  percentage: number;
+  kg: number;
+  costPerKg: number;
+  totalCost: number;
+  color: string;
+  icon: string;
+};
+
 export interface FormulaResultData {
   id: string;
   batchName: string;
@@ -103,16 +114,7 @@ export interface FormulaResultData {
   marketPrice?: number;
   savingPercent: number;
   savingAmount: number;
-  ingredients: {
-    id: string;
-    name: string;
-    percentage: number;
-    kg: number;
-    costPerKg: number;
-    totalCost: number;
-    color: string;
-    icon: string;
-  }[];
+  ingredients: FormulaIngredientItem[];
   nutrients: {
     pk: { val: number; min: number; max: number; ok: boolean; percentProgress: number };
     em: { val: number; min: number; max: number; ok: boolean; percentProgress: number };
